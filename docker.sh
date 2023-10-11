@@ -1,7 +1,7 @@
 # Check if docker so_tp2 exists
 if [ ! "$(docker ps -a -q -f name=so_tp2)" ]; then
     # Create docker so_tp2
-    docker run -d -v ${PWD}:/root --security-opt seccomp:unconfined -ti --name so_tp2 agodio/itba-so:1.0
+    docker run -d -v ${PWD}:/root --security-opt seccomp:unconfined -ti --name so_tp2 agodio/itba-so:2.0
 fi
 
 docker start so_tp2
