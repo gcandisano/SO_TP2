@@ -16,7 +16,10 @@ typedef struct node * node_ptr;
 
 struct node memory_list;
 
+ptr_t list_address;
+
 void init_memory_manager(uint64_t start_address, uint64_t size) {
+    list_address = start_address;
     memory_list.address = (ptr_t) start_address + 0x10000;
     memory_list.size = size;
     memory_list.is_free = true;
@@ -34,7 +37,8 @@ ptr_t malloc(uint64_t size) {
         return NULL; // There is no more empty space
     }
 
-    node_ptr new_node = (node_ptr) (current->address + size);
+    node_ptr new_node = (node_ptr) (list_address + sizeof(struct node));
+    list_address += sizeof(struct node);
     new_node->address = current->address + size;
     new_node->size = current->size - size;
     new_node->is_free = true;
