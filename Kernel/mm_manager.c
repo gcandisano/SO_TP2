@@ -17,7 +17,7 @@ typedef struct node * node_ptr;
 struct node memory_list;
 
 void init_memory_manager(uint64_t start_address, uint64_t size) {
-    memory_list.address = (ptr_t) start_address;
+    memory_list.address = (ptr_t) start_address + 0x10000;
     memory_list.size = size;
     memory_list.is_free = true;
     memory_list.prev = NULL;

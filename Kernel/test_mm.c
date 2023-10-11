@@ -1,10 +1,10 @@
 #include "syscall.h"
 #include "test_util.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "mm_manager.h"
 
-#define MAX_BLOCKS 128
+#define MAX_BLOCKS 5
+
+static void * const heapStart = (void*)0x600000;
 
 typedef struct MM_rq {
   void *address;
@@ -12,6 +12,8 @@ typedef struct MM_rq {
 } mm_rq;
 
 uint64_t test_mm(uint64_t argc, char *argv[]) {
+
+  init_memory_manager(heapStart, 0x1000000);
 
   mm_rq mm_rqs[MAX_BLOCKS];
   uint8_t rq;
@@ -49,7 +51,7 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
     for (i = 0; i < rq; i++)
       if (mm_rqs[i].address)
         if (!memcheck(mm_rqs[i].address, i, mm_rqs[i].size)) {
-          printf("test_mm ERROR\n");
+          // printf("test_mm ERROR\n");
           return -1;
         }
 

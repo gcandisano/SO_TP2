@@ -9,6 +9,8 @@
 #include <colors.h>
 #include <homero.h>
 
+#include "test_util.h"
+
 extern uint8_t text;
 extern uint8_t rodata;
 extern uint8_t data;
@@ -60,6 +62,10 @@ int main()
 	playSimpsons();
 
 	save_original_regs();
+
+	char * args[1] = {"10"};
+
+	test_mm(1, args);
 
 	((EntryPoint)sampleCodeModuleAddress)(); //Calling sampleCodeModule's main address
 	beep();
