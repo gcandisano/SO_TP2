@@ -2,7 +2,7 @@
 #include "test_util.h"
 #include "mm_manager.h"
 
-#define MAX_BLOCKS 5
+#define MAX_BLOCKS 128
 
 static void * const heapStart = (void*)0x600000;
 
@@ -26,7 +26,7 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
   if ((max_memory = satoi(argv[0])) <= 0)
     return -1;
 
-  while (1) {
+  // while (1) {
     rq = 0;
     total = 0;
 
@@ -59,5 +59,5 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
     for (i = 0; i < rq; i++)
       if (mm_rqs[i].address)
         free(mm_rqs[i].address);
-  }
+  // }
 }

@@ -63,7 +63,7 @@ int main()
 
 	save_original_regs();
 
-	char * args[1] = {"10"};
+	char * args[1] = {"1000"};
 
 	test_mm(1, args);
 
