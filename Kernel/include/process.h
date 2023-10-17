@@ -1,5 +1,10 @@
+#ifndef PROCESS_H
+#define PROCESS_H
+
 #include <stdint.h>
 #include <stddef.h>
+#include <queueADT.h>
+#include <scheduler.h>
 
 #define READY 0
 #define BLOCKED 1
@@ -59,3 +64,5 @@ int unblockProcess(int pid);
 void setFileDescriptor(int pid, int index, int value);
 processInfo *getProcessInfo(int pid);
 void freeProcess(PCB *processPcb);
+
+#endif

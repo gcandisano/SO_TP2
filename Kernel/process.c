@@ -62,7 +62,7 @@ int createProcess(char *name, int parent, size_t heapSize, size_t stackSize, cha
     pcb->fd[WRITE_FD] = fds[WRITE_FD]; 
     pcb->fd[ERROR_FD] = fds[ERROR_FD]; 
     pcb->foreground = foreground;
-    pcb->stack->current = createStack((uint64_t *)process->stack->base + process->stack->size, code, args);
+    pcb->stack->current = createStack((uint64_t *)pcb->stack->base + pcb->stack->size, code, args);
     addProcess(pcb);//deberia estar en el scheduler
     return pcb->pid;
 }
@@ -87,11 +87,11 @@ int killProcess(int pid)
 
 int killChildren(int parentPid){
     int count = 0;
-    Queue **myQueues = getQueues();
+    QueueADT **myQueues = getQueues();
     for (int i = MIN_PRIORITY; i <= MAX_PRIORITY; i++)
     {
         int *childrenPids = getChildrenPids(myQueues[i], parentPid);
-        for (int j = 0; killedProcesses[j] != -1; j++)
+        for (int j = 0; childrenPids[j] != -1; j++)
         {
             killProcess(childrenPids[j]);
             count++;
@@ -124,7 +124,7 @@ int unblockProcess(int pid){
 
 void setFileDescriptor(int pid, int index, int value)
 {
-    findPcbEntry(pid)->fd[index] = value; //hacer en scheduler
+    findPcb(pid)->fd[index] = value;
 }
 
 processInfo *getProcessInfo(int pid)

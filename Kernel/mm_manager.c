@@ -28,6 +28,9 @@ void init_memory_manager(uint64_t start_address, uint64_t size) {
 }
 
 ptr_t malloc(uint64_t size) {
+    if (size <= 0) {
+        return NULL;
+    }
     node_ptr current = &memory_list;
     while (current != NULL && !(current->is_free && current->size >= size)) {
         current = current->next;

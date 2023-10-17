@@ -29,6 +29,8 @@ EXTERN irqDispatcher
 EXTERN exceptionDispatcher
 EXTERN syscallHandler
 
+EXTERN scheduler
+
 SECTION .text
 
 %macro pushState 0
@@ -212,7 +214,28 @@ save_original_regs:
 
 ;8254 Timer (Timer Tick)
 _irq00Handler:
-	irqHandlerMaster 0
+	cli
+	pushState
+
+	mov rdi, rsp ; Send RSP and SS as arguments for the switch
+	call scheduler
+	
+	cmp rax, 0
+	je .continue
+
+	mov rsp, rax ; Change stack pointer to new process
+
+	mov rdi, 0 ; pasaje de parametro
+	call irqDispatcher
+
+	.continue:
+	; signal pic EOI (End of Interrupt)
+	mov al, 20h
+	out 20h, al
+
+	popState
+	sti
+	iretq
 
 ;Keyboard
 _irq01Handler:

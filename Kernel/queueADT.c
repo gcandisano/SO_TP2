@@ -58,3 +58,15 @@ void * dequeueByData(QueueADT queue, void * data) {
     free(current);
     return data;
 }
+
+void * findElement(Queue *queue, uint8_t (*condition)(void *)) {
+    Node *current = queue->first;
+    while (current != NULL) {
+        if (condition(current->data)) {
+            return current->data;
+        }
+        current = current->next;
+    }
+
+    return NULL;
+}
