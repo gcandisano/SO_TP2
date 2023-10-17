@@ -22,18 +22,40 @@ cualquier otra variable que consideren necesaria.
 #define ON 1
 
 #define MIN_PRIORITY 1
-#define MAX_PRIORITY 5
+#define MAX_PRIORITY 6
 
-#define NULL ((void *) 0)
+void startScheduler();
 
 uint64_t * scheduler(uint64_t * rsp);
 
 uint8_t getSchedulerStatus();
 
+void stopProcess(uint64_t *stackPointer);
+
 uint64_t * changeProcess(uint64_t * rsp);
+
+uint8_t isRunning(struct PCB * process);
+
+struct PCB * getNextProcess();
 
 uint8_t shouldChange();
 
-PCB * findPcb(int pid);
+void addProcess(struct PCB * process);
+
+void removeProcess(struct PCB * process);
+
+uint8_t isPid(struct PCB * process);
+
+struct PCB * findPcb(int pid);
+
+uint64_t getCurrentPID();
+
+int changePriority(int pid, int newPriority);
+
+int * getChildrenPids(QueueADT * queue, int parentPid);
+
+QueueADT ** getQueues();
+
+struct PCB * getIdleProcess();
 
 #endif

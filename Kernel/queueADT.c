@@ -3,15 +3,16 @@
 
 typedef struct QueueCDT * QueueADT;
 
+typedef struct Node {
+    void * data;
+    struct Node * next;
+} Node;
+
 typedef struct QueueCDT {
     Node * first;
     Node * last;
 } QueueCDT;
 
-typedef struct Node {
-    void * data;
-    Node * next;
-} Node;
 
 QueueADT createQueue() {
     QueueADT queue = malloc(sizeof(QueueCDT));
@@ -54,12 +55,12 @@ void * dequeueByData(QueueADT queue, void * data) {
         queue->last = previous;
     }
 
-    void * data = current->data;
+    void * dataToReturn = current->data;
     free(current);
-    return data;
+    return dataToReturn;
 }
 
-void * findElement(Queue *queue, uint8_t (*condition)(void *)) {
+void * findElement(QueueADT queue, uint8_t (*condition)(void *)) {
     Node *current = queue->first;
     while (current != NULL) {
         if (condition(current->data)) {

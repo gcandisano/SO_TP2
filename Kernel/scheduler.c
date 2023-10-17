@@ -15,7 +15,7 @@ cualquier otra variable que consideren necesaria.
 
 uint8_t schedulerStatus = OFF;
 
-uint8_t quantums[5] = {1, 2, 4, 8, 16};
+uint8_t quantums[6] = {1, 16, 8, 4, 2, 1};
 
 QueueADT * queues[MAX_PRIORITY];
 
@@ -127,4 +127,38 @@ PCB * findPcb(int pid) {
         }
     }
     return NULL;
+}
+
+uint64_t getCurrentPID() {
+    return currentProcess->pid;
+}
+
+int changePriority(int pid, int newPriority) {
+    PCB *processToChange = findPcb(pid);
+
+    if (processToChange == NULL) {
+        return -1;
+    }
+    dequeueByData(queues[processToChange->priority], pid);
+    if (newPriority > MAX_PRIORITY) {
+        processToChange->priority = MAX_PRIORITY;
+    } else if (newPriority < MIN_PRIORITY - 1) { //-1 because of IDLE process priority
+        processToChange->priority = MIN_PRIORITY;
+    } else {
+        processToChange->priority = newPriority;
+    }
+    enqueue(queues[processToChange->priority], processToChange);
+    return 0;
+}
+
+int * getChildrenPids(QueueADT * queue, int parentPid) {
+    // TODO: implementar en queue
+}
+
+QueueADT ** getQueues() {
+    return queues;
+}
+
+struct PCB * getIdleProcess() {
+    // TODO: getIdleProcess
 }

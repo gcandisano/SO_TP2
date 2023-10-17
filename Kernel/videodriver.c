@@ -158,14 +158,6 @@ void printChar(char c, int x, int y, Color color) {
 	}
 } */
 
-unsigned int strlen(char * str) {
-    unsigned int i = 0;
-    while (str[i] != 0) {
-        i++;
-    }
-    return i;
-}
-
 void printStringPlace(char * string, int x, int y, Color color) {
 	int i = 0;
 	int oldColumn = column;

@@ -225,10 +225,11 @@ _irq00Handler:
 
 	mov rsp, rax ; Change stack pointer to new process
 
+	.continue:
+
 	mov rdi, 0 ; pasaje de parametro
 	call irqDispatcher
 
-	.continue:
 	; signal pic EOI (End of Interrupt)
 	mov al, 20h
 	out 20h, al

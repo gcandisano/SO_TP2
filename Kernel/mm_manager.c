@@ -1,7 +1,5 @@
-#include <stdint.h>
-#include <stdbool.h>
+#include <mm_manager.h>
 
-#define NULL ((void *)0)
 typedef uint64_t * ptr_t;
 
 struct node {

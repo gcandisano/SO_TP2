@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <queueADT.h>
 #include <scheduler.h>
+#include <lib.h>
 
 #define READY 0
 #define BLOCKED 1

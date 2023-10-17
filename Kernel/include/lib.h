@@ -14,4 +14,7 @@ int inb(int memoryMap);
 uint64_t *createStack(uint64_t *stackStart, void *code, char **args);
 void forceScheduler();
 
+unsigned int strlen(char* str);
+void strcpy(char * dest, char * src);
+
 #endif

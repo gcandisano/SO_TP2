@@ -1,6 +1,4 @@
 #include <process.h>
-#include <string.h>
-
 
 int biggerPid = 1;
 
@@ -8,7 +6,7 @@ int createProcess(char *name, int parent, size_t heapSize, size_t stackSize, cha
     if (name == NULL || code == NULL || heapSize < 0 || stackSize < 0 || fds == NULL) return -1;
     PCB *pcb = (PCB *) malloc(sizeof(PCB));
     if (pcb == NULL) return -1;
-    pcb->name = malloc(strlen(name) + 1);
+    pcb->name = (char *) malloc(strlen(name) + 1);
     if (pcb->name == NULL){
         free(pcb);
         return -1;
@@ -35,7 +33,7 @@ int createProcess(char *name, int parent, size_t heapSize, size_t stackSize, cha
     }
     pcb->heap->size = heapSize;
     pcb->heap->current = pcb->heap->base;
-    pcb->stack = malloc(sizeof(memoryBlock));
+    pcb->stack = (memoryBlock *) malloc(sizeof(memoryBlock));
     if(pcb->stack == NULL)
     {
         free(pcb->heap->base);
@@ -69,9 +67,9 @@ int createProcess(char *name, int parent, size_t heapSize, size_t stackSize, cha
 
 int killProcess(int pid)
 {
-    PCB *pcb = findPcbEntry(pid);//scheduler
+    PCB *pcb = findPcb(pid);//scheduler
     if(pcb == NULL) return -1;
-    if(findPcbEntry(pcb->parent) == NULL || pcb->status == ZOMBIE){
+    if(findPcb(pcb->parent) == NULL || pcb->status == ZOMBIE) {
         pcb->status = DEAD;
         removeProcess(pcb); // en scheduler
         freeProcess(pcb);
@@ -85,14 +83,12 @@ int killProcess(int pid)
     return 0;
 }
 
-int killChildren(int parentPid){
+int killChildren(int parentPid) {
     int count = 0;
     QueueADT **myQueues = getQueues();
-    for (int i = MIN_PRIORITY; i <= MAX_PRIORITY; i++)
-    {
+    for (int i = MIN_PRIORITY; i <= MAX_PRIORITY; i++) {
         int *childrenPids = getChildrenPids(myQueues[i], parentPid);
-        for (int j = 0; childrenPids[j] != -1; j++)
-        {
+        for (int j = 0; childrenPids[j] != -1; j++) {
             killProcess(childrenPids[j]);
             count++;
         }
@@ -101,10 +97,8 @@ int killChildren(int parentPid){
     return count;
 }
 
-
-
-int blockProcess(int pid){
-    PCB *pcb = findPcbEntry(pid);
+int blockProcess(int pid) {
+    PCB *pcb = findPcb(pid);
     if(pcb == NULL) return -1;
     pcb->status = BLOCKED;
     if (pid == getCurrentPID()) {
@@ -113,23 +107,21 @@ int blockProcess(int pid){
     return 0;
 }
 
-int unblockProcess(int pid){
-    PCB *pcb = findPcbEntry(pid);
+int unblockProcess(int pid) {
+    PCB *pcb = findPcb(pid);
     if(pcb == NULL) return -1;
     pcb->status = READY;
     return 0;
 }
 
 
-
-void setFileDescriptor(int pid, int index, int value)
-{
+void setFileDescriptor(int pid, int index, int value) {
     findPcb(pid)->fd[index] = value;
 }
 
 processInfo *getProcessInfo(int pid)
 {
-    PCB *pcb = findPcbEntry(pid);
+    PCB *pcb = findPcb(pid);
     processInfo *info = malloc(sizeof(processInfo)); 
     if (info == NULL) return NULL;
     info->pid = pcb->pid;
