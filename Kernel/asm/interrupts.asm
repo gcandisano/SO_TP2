@@ -17,6 +17,9 @@ GLOBAL _int80Handler
 GLOBAL _exception0Handler
 GLOBAL _exception6Handler
 
+GLOBAL createStack
+GLOBAL forceScheduler
+
 GLOBAL registers
 GLOBAL excepRegs
 
@@ -261,9 +264,42 @@ _exception0Handler:
 _exception6Handler:
 	exceptionHandler 6
 
+createStack: ;RDI EL STACK - RSI CODE - RDX ARGS 
+	mov r8,rsp ; preservo viejo RSP
+	mov rsp,rdi
+	push 0x0 ; el SS
+	push rdi ; el RSP
+	push 0x202 ; el RFLAGS
+	push 0x8 ; el CS
+
+	push rcx ; el RIP ahora es el wrapper.
+
+	push 0x0 ; el RAX
+	push 0x1 ;rbx
+    push 0x2 ;rcx
+    push 0x3 ; rdx
+    push 0x4 ;rbp
+    push RSI ; RDI->PRIMER ARGUMENTO WRAPPER (code)
+    push RDX ; RSI->SEGUNDO ARGUMENTO WRAPPER. (args del code)
+    push 0x7 ; r8
+    push 0x8 ; r9
+    push 0x9 ; r10
+    push 0x10 ; r11
+    push 0x11 ; r12
+    push 0x12 ; r13
+    push 0x13 ; r14
+    push 0x14 ; r15
+	mov rax,rsp ; el RSP
+	mov rsp,r8 ; restauro el RSP
+	ret
+
 haltcpu:
 	cli
 	hlt
+	ret
+
+forceScheduler:
+	int 20h 
 	ret
 
 
