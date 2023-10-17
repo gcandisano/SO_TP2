@@ -1,10 +1,11 @@
 #include <mm_manager.h>
 #include <queueADT.h>
+#include <process.h>
 
 typedef struct QueueCDT * QueueADT;
 
 typedef struct Node {
-    void * data;
+    PCB * data;
     struct Node * next;
 } Node;
 
@@ -64,6 +65,18 @@ void * findElement(QueueADT queue, uint8_t (*condition)(void *)) {
     Node *current = queue->first;
     while (current != NULL) {
         if (condition(current->data)) {
+            return current->data;
+        }
+        current = current->next;
+    }
+
+    return NULL;
+}
+
+void * findElementByPid(QueueADT queue, int pid) {
+    Node *current = queue->first;
+    while (current != NULL) {
+        if (current->data->pid == pid) {
             return current->data;
         }
         current = current->next;

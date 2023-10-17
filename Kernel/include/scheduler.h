@@ -21,7 +21,7 @@ cualquier otra variable que consideren necesaria.
 #define OFF 0
 #define ON 1
 
-#define MIN_PRIORITY 1
+#define MIN_PRIORITY 1//este no tendria q ser 0 y el max 5?
 #define MAX_PRIORITY 6
 
 void startScheduler();
@@ -44,7 +44,7 @@ void addProcess(struct PCB * process);
 
 void removeProcess(struct PCB * process);
 
-uint8_t isPid(struct PCB * process);
+uint8_t isPid(struct PCB * process, int pid);
 
 struct PCB * findPcb(int pid);
 

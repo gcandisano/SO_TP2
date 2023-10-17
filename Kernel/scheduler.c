@@ -80,7 +80,7 @@ uint8_t isRunning(PCB * process) {
     return process->status == RUNNING;
 }
 
-PCB * getNextProcess() {
+PCB * getNextProcess() { //preguntar a emi
     PCB *elementToReturn;
     for (int i = MAX_PRIORITY; i >= MIN_PRIORITY; i--) {
         if ((elementToReturn = findElement(queues[i], isRunning)) != NULL) {
@@ -114,15 +114,15 @@ void removeProcess(PCB * process) {
     dequeueByData(queues[process->priority], process);
 }
 
-uint8_t isPid(PCB * process) {
-    return process->pid == getCurrentPID();
+uint8_t isPid(PCB * process, int pid) {
+    return process->pid == pid;
 }
 
 
-PCB * findPcb(int pid) {
+PCB * findPcb(int pid) { 
     PCB *elementToReturn;
     for (int i = MAX_PRIORITY; i >= MIN_PRIORITY; i--) {
-        if ((elementToReturn = findElement(queues[i], isPid)) != NULL) {
+        if ((elementToReturn = findElementByPid(queues[i], isPid)) != NULL) {
             return elementToReturn;
         }
     }
