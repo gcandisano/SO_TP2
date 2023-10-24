@@ -11,6 +11,10 @@ void enqueue(QueueADT queue, void * data);
 
 void * dequeueByData(QueueADT queue, void * data);
 
+void * peek(QueueADT queue);
+
 void * findElement(QueueADT queue, uint8_t (*condition)(void *));
+
+void * findElements(QueueADT queue, uint8_t (*condition)(void *, int), int pid);
 
 #endif

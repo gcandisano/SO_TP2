@@ -34,7 +34,7 @@ void stopProcess(uint64_t *stackPointer);
 
 uint64_t * changeProcess(uint64_t * rsp);
 
-uint8_t isRunning(struct PCB * process);
+uint8_t isRunning(void * process);
 
 struct PCB * getNextProcess();
 
@@ -44,7 +44,7 @@ void addProcess(struct PCB * process);
 
 void removeProcess(struct PCB * process);
 
-uint8_t isPid(struct PCB * process, int pid);
+uint8_t isPid(void * process);
 
 struct PCB * findPcb(int pid);
 
@@ -52,9 +52,9 @@ uint64_t getCurrentPID();
 
 int changePriority(int pid, int newPriority);
 
-int * getChildrenPids(QueueADT * queue, int parentPid);
+int * getChildrenPids(QueueADT queue, int parentPid);
 
-QueueADT ** getQueues();
+QueueADT * getQueues();
 
 struct PCB * getIdleProcess();
 

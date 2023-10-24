@@ -61,6 +61,13 @@ void * dequeueByData(QueueADT queue, void * data) {
     return dataToReturn;
 }
 
+void * peek(QueueADT queue) {
+    if (queue->first == NULL) {
+        return NULL;
+    }
+    return queue->first->data;
+}
+
 void * findElement(QueueADT queue, uint8_t (*condition)(void *)) {
     Node *current = queue->first;
     while (current != NULL) {
@@ -73,14 +80,19 @@ void * findElement(QueueADT queue, uint8_t (*condition)(void *)) {
     return NULL;
 }
 
-void * findElementByPid(QueueADT queue, int pid) {
+void * findElements(QueueADT queue, uint8_t (*condition)(void *, int), int pid) {
+    int * pids = malloc(sizeof(int) * 100);
+    if (pids == NULL) {
+        return NULL;
+    }
+    int dim = 0;
     Node *current = queue->first;
     while (current != NULL) {
-        if (current->data->pid == pid) {
-            return current->data;
+        if (condition(current->data, pid)) {
+            pids[dim++] = current->data->pid;
         }
         current = current->next;
     }
-
-    return NULL;
+    pids[dim] = -1;
+    return pids;
 }

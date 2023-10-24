@@ -17,7 +17,7 @@ uint8_t schedulerStatus = OFF;
 
 uint8_t quantums[6] = {1, 16, 8, 4, 2, 1};
 
-QueueADT * queues[MAX_PRIORITY];
+QueueADT queues[MAX_PRIORITY];
 
 struct PCB * currentProcess;
 
@@ -76,8 +76,8 @@ uint64_t * changeProcess(uint64_t * rsp) {
     return currentProcess->stack->current;
 }
 
-uint8_t isRunning(PCB * process) {
-    return process->status == RUNNING;
+uint8_t isRunning(void * process) {
+    return ((PCB *) process)->status == RUNNING;
 }
 
 PCB * getNextProcess() { //preguntar a emi
@@ -114,15 +114,17 @@ void removeProcess(PCB * process) {
     dequeueByData(queues[process->priority], process);
 }
 
-uint8_t isPid(PCB * process, int pid) {
-    return process->pid == pid;
+int auxPid;
+uint8_t isPid(void * process) {
+    return ((PCB *)process)->pid == auxPid;
 }
 
 
 PCB * findPcb(int pid) { 
     PCB *elementToReturn;
+    auxPid = pid;
     for (int i = MAX_PRIORITY; i >= MIN_PRIORITY; i--) {
-        if ((elementToReturn = findElementByPid(queues[i], isPid)) != NULL) {
+        if ((elementToReturn = findElement(queues[i], isPid)) != NULL) {
             return elementToReturn;
         }
     }
@@ -139,7 +141,7 @@ int changePriority(int pid, int newPriority) {
     if (processToChange == NULL) {
         return -1;
     }
-    dequeueByData(queues[processToChange->priority], pid);
+    dequeueByData(queues[processToChange->priority], processToChange);
     if (newPriority > MAX_PRIORITY) {
         processToChange->priority = MAX_PRIORITY;
     } else if (newPriority < MIN_PRIORITY - 1) { //-1 because of IDLE process priority
@@ -151,14 +153,18 @@ int changePriority(int pid, int newPriority) {
     return 0;
 }
 
-int * getChildrenPids(QueueADT * queue, int parentPid) {
-    // TODO: implementar en queue
+uint8_t isChild(void * process, int pid) {
+    return ((PCB *)process)->parent == pid;
 }
 
-QueueADT ** getQueues() {
+int * getChildrenPids(QueueADT queue, int parentPid) {
+    return findElements(queue, isChild, parentPid);
+}
+
+QueueADT * getQueues() {
     return queues;
 }
 
 struct PCB * getIdleProcess() {
-    // TODO: getIdleProcess
+    return peek(queues[0]);
 }
