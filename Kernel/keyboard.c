@@ -1,9 +1,4 @@
-#include <string.h>
 #include <keyboard.h>
-#include <videodriver.h>
-
-#define BUFFER_SIZE 512
-#define MAX_KEY_PRESSED 127
 
 static char buffer[BUFFER_SIZE] = {0};
 static int elemCount = 0;
@@ -12,6 +7,8 @@ static int writeIndex = 0;
 
 static char shiftPressed = 0;
 static char capsLocked = 0;
+
+int semaphoreId;
 
 static const char charHexMap[256] = {       
         0,  1/*esc*/,  '1',  '2',  '3',  '4',  '5',  '6',   '7',  '8',  '9',   '0',   '\'',  '<', '\b',
@@ -69,12 +66,11 @@ void keyboard_handler() {
         elemCount++;
         writeIndex++;
     }
+    semPost(semaphoreId);
 }
 
 char getChar() {
-    if (elemCount == 0) { 
-        return 0; // buffer is empty
-    }
+    semWait(semaphoreId);
 
     char toReturn = buffer[readIndex];
     
@@ -87,3 +83,9 @@ char getChar() {
     
     return toReturn;
 }
+
+void initKeyboard() {
+    semaphoreId = semCreate("keyboard", 0);
+    semOpen("keyboard");
+}
+

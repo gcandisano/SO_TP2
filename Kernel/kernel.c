@@ -8,6 +8,8 @@
 #include <sound.h>
 #include <stdint.h>
 #include <videodriver.h>
+#include <sync.h>
+#include <keyboard.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -69,6 +71,10 @@ int main() {
 
   startMemoryManager(memoryManagerStart, 0x1000000);
 
+  semInit();
+
+  initKeyboard();
+  
   startScheduler();
 
   int shell = createProcess("shell", 0, 8192, 8192, shellArgs,

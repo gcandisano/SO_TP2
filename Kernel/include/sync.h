@@ -1,3 +1,6 @@
+#ifndef SYNC_H
+#define SYNC_H 
+
 #include <scheduler.h>
 #include <process.h>
 #include <queueADT.h>
@@ -58,3 +61,5 @@ void unlockMutex(int mutexID);
 void createMutex(int mutexID);
 
 void delteMutex(int mutexID);
+
+#endif

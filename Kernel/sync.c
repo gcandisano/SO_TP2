@@ -6,6 +6,7 @@ void semInit() {
     semaphores = (TSem *) malloc(sizeof(TSem) * MAX_SEMAPHORES);
     int i;
     memset(semaphores, 0, sizeof(TSem) * MAX_SEMAPHORES);
+    initMutex();
     for(i = 0; i < MAX_SEMAPHORES; i++){
         createMutex(i);
     }
@@ -53,18 +54,20 @@ int userExists (char * name) {
 }
 
 sem_t semOpen(char * semName) {
-    for (int i = FIRST_USER_SEMAPHORE ; i < MAX_SEMAPHORES && (semaphores[i].name == NULL || strcmp(semaphores[i].name, semName) != 0); i++) {
-        if(semaphores[i].destroying)
-            return -1;
-        semaphores[i].activeProcesses[getCurrentPID()] = true;
-        semaphores[i].activeProcessDim++;
-        return i;
+    int i = FIRST_USER_SEMAPHORE;
+    while (i < MAX_SEMAPHORES && (semaphores[i].name == NULL || strcmp(semaphores[i].name, semName) != 0)) {
+        i++;
     }
-    return -1;
+    if (i == MAX_SEMAPHORES || semaphores[i].destroying) {
+        return -1;
+    }
+    semaphores[i].activeProcesses[getCurrentPID()] = 1;
+    semaphores[i].activeProcessDim++;
+    return i;
 }
 
-sem_t semClose(sem_t sem){
-    if (semaphores[sem].name == NULL || semaphores[sem].activeProcesses[getCurrentPID()] == false || sem > MAX_SEMAPHORES || sem < 0) return -1;
+sem_t semClose(sem_t sem) {
+    if (sem > MAX_SEMAPHORES || sem < 0 || semaphores[sem].name == NULL || semaphores[sem].activeProcesses[getCurrentPID()] == false) return -1;
     semaphores[sem].activeProcesses[getCurrentPID()] = false;
     semaphores[sem].activeProcessDim--;
     return 0;
@@ -79,14 +82,14 @@ sem_t semCreateAnon(int initVal) {
     return minFreeSemID;
 }
 
-sem_t semAnonOpen(sem_t sem){
-    if (semaphores[sem].name == NULL || semaphores[sem].destroying) return -1; // hace falta lo del name????
+sem_t semAnonOpen(sem_t sem) {
+    if (semaphores[sem].name == NULL || semaphores[sem].destroying) return -1;
     semaphores[sem].activeProcesses[getCurrentPID()] = true;
     semaphores[sem].activeProcessDim++;
     return 0;
 }
 
-sem_t findMinFreeSemID(){
+sem_t findMinFreeSemID() {
     for (int i = 0; i < FIRST_USER_SEMAPHORE; i++){
         if (semaphores[i].name == NULL) return i;
     }
@@ -94,8 +97,7 @@ sem_t findMinFreeSemID(){
 }
 
 int semWait(sem_t sem) {
-    if (semaphores[sem].name == NULL) return -1;
-    if (sem < 0 || sem >= MAX_SEMAPHORES) return -1;
+    if (semaphores[sem].name == NULL || sem < 0 || sem >= MAX_SEMAPHORES) return -1;
     lockMutex(sem);
     if (semaphores[sem].value > 0) {
         semaphores[sem].value--;
@@ -111,13 +113,11 @@ int semWait(sem_t sem) {
 }
 
 int semPost(sem_t sem) {
-    if (semaphores[sem].name == NULL) return -1;
-    if (sem < 0 || sem >= MAX_SEMAPHORES) return -1;
+    if (semaphores[sem].name == NULL || sem < 0 || sem >= MAX_SEMAPHORES) return -1;
     lockMutex(sem);
     if (isEmpty(semaphores[sem].blockedProcesses))
         semaphores[sem].value++;
-        
-    if (semaphores[sem].value == 0) {
+    else if (semaphores[sem].value == 0) {
         PCB *headOfQueue = dequeue(semaphores[sem].blockedProcesses);
         if (headOfQueue != NULL)
             unblockProcess(headOfQueue->pid);
@@ -136,12 +136,11 @@ void initMutex() {
 }
 
 void lockMutex(int mutexID) {
-    if (enterCritRegion(&mutexArray[mutexID].value)) {
+    if (enterCritRegion(&mutexArray[mutexID].value)) { 
         mutexArray[mutexID].currentOwnerPID = getCurrentPID();
     } else {
         enqueue(mutexArray[mutexID].blockedProcesses, getCurrentPCB());
         blockProcess(getCurrentPID());
-        mutexArray[mutexID].currentOwnerPID = getCurrentPID();
     }
 }
 void unlockMutex(int mutexID) {
