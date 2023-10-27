@@ -1,11 +1,9 @@
-#include <mm_manager.h>
 #include <queueADT.h>
-#include <process.h>
 
 typedef struct QueueCDT * QueueADT;
 
 typedef struct Node {
-    PCB * data;
+    void * data;
     struct Node * next;
 } Node;
 
@@ -32,6 +30,21 @@ void enqueue(QueueADT queue, void * data) {
         queue->last->next = node;
     }
     queue->last = node;
+}
+
+void * dequeue(QueueADT queue) {
+    if (isEmpty(queue)) {
+        return NULL;
+    }
+    Node * aux = queue->first;
+    void * data = aux->data;
+    queue->first = queue->first->next;
+
+    if (queue->first == NULL) {
+        queue->last = NULL;
+    }
+    free(aux);
+    return data;
 }
 
 void * dequeueByData(QueueADT queue, void * data) {
@@ -61,6 +74,10 @@ void * dequeueByData(QueueADT queue, void * data) {
     return dataToReturn;
 }
 
+int isEmpty(QueueADT queue) {
+    return queue->first == NULL;
+}
+
 void * peek(QueueADT queue) {
     if (queue->first == NULL) {
         return NULL;
@@ -80,19 +97,30 @@ void * findElement(QueueADT queue, uint8_t (*condition)(void *)) {
     return NULL;
 }
 
-void * findElements(QueueADT queue, uint8_t (*condition)(void *, int), int pid) {
-    int * pids = malloc(sizeof(int) * 100);
-    if (pids == NULL) {
+void ** findElements(QueueADT queue, uint8_t (*condition)(void *, int), int pid) {
+    void ** elements = malloc(sizeof(void *) * 100);
+    if (elements == NULL) {
         return NULL;
     }
     int dim = 0;
     Node *current = queue->first;
     while (current != NULL) {
         if (condition(current->data, pid)) {
-            pids[dim++] = current->data->pid;
+            elements[dim++] = current->data;
         }
         current = current->next;
     }
-    pids[dim] = -1;
-    return pids;
+    elements[dim] = NULL;
+    return elements;
+}
+
+void deleteQueue(QueueADT queue) {
+    Node * current = queue->first;
+    Node * next;
+    while (current != NULL) {
+        next = current->next;
+        free(current);
+        current = next;
+    }
+    free(queue);
 }

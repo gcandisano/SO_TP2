@@ -16,5 +16,6 @@ void forceScheduler();
 
 unsigned int strlen(char* str);
 void strcpy(char * dest, char * src);
+int strcmp(char * str1, char * str2);
 
 #endif

@@ -5,12 +5,10 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-typedef uint64_t * ptr_t;
+void startMemoryManager(const void * start_address, uint64_t size);
 
-void startMemoryManager(uint64_t start_address, uint64_t size);
+void * malloc(uint64_t size);
 
-ptr_t malloc(uint64_t size);
-
-void free(ptr_t address);
+void free(void * address);
 
 #endif

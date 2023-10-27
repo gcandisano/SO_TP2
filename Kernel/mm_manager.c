@@ -1,35 +1,33 @@
 #include <mm_manager.h>
 
-typedef uint64_t * ptr_t;
-
 struct node {
-    ptr_t address;
+    void * address;
     uint64_t size;
     bool is_free;
     struct node * prev;
     struct node * next;
 };
 
-typedef struct node * node_ptr;
+typedef struct node * NodePtr;
 
 struct node memory_list;
 
-ptr_t list_address;
+void * list_address;
 
-void startMemoryManager(uint64_t start_address, uint64_t size) {
-    list_address = start_address;
-    memory_list.address = (ptr_t) start_address + 0x10000;
+void startMemoryManager(const void * start_address, uint64_t size) {
+    list_address = (void *) start_address;
+    memory_list.address = (void *) start_address + 0x10000;
     memory_list.size = size;
     memory_list.is_free = true;
     memory_list.prev = NULL;
     memory_list.next = NULL;
 }
 
-ptr_t malloc(uint64_t size) {
+void * malloc(uint64_t size) {
     if (size <= 0) {
         return NULL;
     }
-    node_ptr current = &memory_list;
+    NodePtr current = &memory_list;
     while (current != NULL && !(current->is_free && current->size >= size)) {
         current = current->next;
     }
@@ -38,7 +36,7 @@ ptr_t malloc(uint64_t size) {
         return NULL; // There is no more empty space
     }
 
-    node_ptr new_node = (node_ptr) (list_address + sizeof(struct node));
+    NodePtr new_node = (NodePtr) (list_address + sizeof(struct node));
     list_address += sizeof(struct node);
     new_node->address = current->address + size;
     new_node->size = current->size - size;
@@ -53,8 +51,8 @@ ptr_t malloc(uint64_t size) {
     return current->address;
 }
 
-void free(ptr_t address) {
-    node_ptr current = &memory_list;
+void free(void * address) {
+    NodePtr current = &memory_list;
     while (current != NULL && current->address != address) {
         current = current->next;
     }

@@ -4,6 +4,8 @@ GLOBAL clock
 GLOBAL inb
 GLOBAL outb
 
+GLOBAL enterCritRegion
+
 section .text
 	
 cpuVendor:
@@ -80,3 +82,11 @@ outb:
 	mov rsp, rbp
 	pop rbp
 	ret
+
+
+enterCritRegion:
+	mov eax, 1
+	xchg eax, [rdi]
+	dec eax ; Return 1 if it enters correctly
+	ret
+

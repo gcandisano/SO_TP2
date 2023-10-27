@@ -130,6 +130,8 @@ PCB *findPcb(int pid) {
 
 uint64_t getCurrentPID() { return currentProcess->pid; }
 
+PCB * getCurrentPCB() { return currentProcess; }
+
 int changePriority(int pid, int newPriority) {
   PCB *processToChange = findPcb(pid);
 
@@ -153,11 +155,11 @@ uint8_t isChild(void *process, int pid) {
   return ((PCB *)process)->parent == pid;
 }
 
-int *getChildrenPids(QueueADT queue, int parentPid) {
-  return findElements(queue, isChild, parentPid);
+PCB ** getChildren(QueueADT queue, int parentPid) {
+  return (PCB **) findElements(queue, isChild, parentPid);
 }
 
-QueueADT *getQueues() { return queues; }
+QueueADT * getQueues() { return queues; }
 
 struct PCB *getIdleProcess() {
   return peek(queues[0]);

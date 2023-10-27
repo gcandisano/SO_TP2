@@ -18,6 +18,8 @@
 #define ERROR_FD 2
 #define SHELL 0
 
+#define MAX_PROCESSES 100
+
 typedef struct memoryBlock
 {
     uint64_t *base;

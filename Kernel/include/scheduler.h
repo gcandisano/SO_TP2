@@ -28,6 +28,8 @@ extern void forceProcessChange(uint64_t * rsp);
 
 void startScheduler();
 
+void startShell();
+
 uint64_t * scheduler(uint64_t * rsp);
 
 uint8_t getSchedulerStatus();
@@ -52,9 +54,11 @@ struct PCB * findPcb(int pid);
 
 uint64_t getCurrentPID();
 
+struct PCB * getCurrentPCB();
+
 int changePriority(int pid, int newPriority);
 
-int * getChildrenPids(QueueADT queue, int parentPid);
+struct PCB ** getChildren(QueueADT queue, int parentPid);
 
 QueueADT * getQueues();
 

@@ -17,6 +17,7 @@ extern uint8_t endOfKernelBinary;
 extern uint8_t endOfKernel;
 
 extern void saveOriginalRegs();
+extern void _hlt();
 
 static const uint64_t PageSize = 0x1000;
 
