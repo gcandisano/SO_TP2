@@ -16,7 +16,7 @@ struct node memory_list;
 
 ptr_t list_address;
 
-void init_memory_manager(uint64_t start_address, uint64_t size) {
+void startMemoryManager(uint64_t start_address, uint64_t size) {
     list_address = start_address;
     memory_list.address = (ptr_t) start_address + 0x10000;
     memory_list.size = size;

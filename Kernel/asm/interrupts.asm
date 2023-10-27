@@ -19,11 +19,12 @@ GLOBAL _exception6Handler
 
 GLOBAL createStack
 GLOBAL forceScheduler
+GLOBAL forceProcessChange
 
 GLOBAL registers
 GLOBAL excepRegs
 
-GLOBAL save_original_regs
+GLOBAL saveOriginalRegs
 
 EXTERN irqDispatcher
 EXTERN exceptionDispatcher
@@ -199,7 +200,7 @@ saveRegisters:
 	iretq 	; SS, RSP, RFLAGS, CS, RIP
 
 
-save_original_regs:
+saveOriginalRegs:
 	; Saving registers: RBX, RBP, R12, R13, R15, RSP, RIP
 	mov [ogRegs+8*1], rbx
 	mov [ogRegs+8*2], rbp
@@ -296,7 +297,7 @@ createStack: ;RDI EL STACK - RSI CODE - RDX ARGS
 	push 0x202 ; el RFLAGS
 	push 0x8 ; el CS
 
-	push rcx ; el RIP ahora es el wrapper.
+	push rsi ; el RIP ahora es el wrapper.
 
 	push 0x0 ; el RAX
 	push 0x1 ;rbx
@@ -317,15 +318,20 @@ createStack: ;RDI EL STACK - RSI CODE - RDX ARGS
 	mov rsp,r8 ; restauro el RSP
 	ret
 
+forceProcessChange:
+	mov rsp, rdi
+	popState
+	iretq
+
 haltcpu:
 	cli
 	hlt
 	ret
 
+
 forceScheduler:
 	int 20h 
 	ret
-
 
 
 SECTION .bss

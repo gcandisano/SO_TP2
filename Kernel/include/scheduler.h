@@ -24,6 +24,8 @@ cualquier otra variable que consideren necesaria.
 #define MIN_PRIORITY 1//este no tendria q ser 0 y el max 5?
 #define MAX_PRIORITY 6
 
+extern void forceProcessChange(uint64_t * rsp);
+
 void startScheduler();
 
 uint64_t * scheduler(uint64_t * rsp);
