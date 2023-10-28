@@ -1,9 +1,11 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <process.h>
 
 int biggerPid = 1;
 
 int createProcess(char *name, int parent, size_t heapSize, size_t stackSize, char **args, void *code, char foreground, int *fds){
-    if (name == NULL || code == NULL || heapSize < 0 || stackSize < 0 || fds == NULL) return -1;
+    if (name == NULL || code == NULL || heapSize <= 0 || stackSize <= 0 || fds == NULL) return -1;
     PCB * pcb = (PCB *) malloc(sizeof(PCB));
     if (pcb == NULL) return -1;
     pcb->name = (char *) malloc(strlen(name) + 1);

@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <queueADT.h>
 
 typedef struct QueueCDT * QueueADT;
@@ -15,6 +17,9 @@ typedef struct QueueCDT {
 
 QueueADT createQueue() {
     QueueADT queue = malloc(sizeof(QueueCDT));
+    if (queue == NULL) {
+        return NULL;
+    }
     queue->first = NULL;
     queue->last = NULL;
     return queue;
@@ -22,6 +27,9 @@ QueueADT createQueue() {
 
 void enqueue(QueueADT queue, void * data) {
     Node * node = malloc(sizeof(Node));
+    if (node == NULL) {
+        return;
+    }
     node->data = data;
     node->next = NULL;
     if (queue->first == NULL) {
@@ -88,7 +96,7 @@ void * peek(QueueADT queue) {
 void * findElement(QueueADT queue, uint8_t (*condition)(void *)) {
     Node *current = queue->first;
     while (current != NULL) {
-        if (condition(current->data)) {
+        if ((*condition)(current->data)) {
             return current->data;
         }
         current = current->next;

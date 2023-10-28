@@ -18,3 +18,8 @@
 .bash_history
 .gdb_history
 *.elf
+
+#PVS
+*strace_out
+*report.tasks
+*PVS-Studio.log

@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <colors.h>
 #include <homero.h>
 #include <idtLoader.h>
@@ -69,7 +71,7 @@ int main() {
 
   saveOriginalRegs();
 
-  startMemoryManager(memoryManagerStart, 0x1000000);
+  startMemoryManager(memoryManagerStart, 0x5000000);
 
   semInit();
 
@@ -80,7 +82,7 @@ int main() {
   int shell = createProcess("shell", 0, 8192, 8192, shellArgs,
                             sampleCodeModuleAddress, 1, defaultFds);
 
-  int idlePid = createProcess("idle", 0, 1024, 1024, idleArgs, (void *)idle, 1,
+  int idlePid = createProcess("idle", 0, 1024, 1024, idleArgs, &idle, 1,
                               defaultFds);
 
   changePriority(idlePid, 0);

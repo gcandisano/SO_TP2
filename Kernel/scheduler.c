@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 /* El sistema DEBERÁ implementar el siguiente algoritmo de scheduling:
 ● Priority-based round Robin.
 El sistema también DEBERÁ proveer los siguientes servicios:
@@ -13,20 +15,26 @@ los hijos terminen */
 
 uint8_t schedulerStatus = OFF;
 
-uint8_t quantums[6] = {1, 16, 8, 4, 2, 1};
+uint8_t quantums[6] = {0, 16, 8, 4, 2, 1};
 
-QueueADT queues[MAX_PRIORITY];
+QueueADT queues[MAX_PRIORITY + 1];
 
 struct PCB *currentProcess;
 
+size_t cantProcess = 0;
+int foregroundProcess;
+
 void startScheduler() {
-  for (int i = 0; i < MAX_PRIORITY; i++) {
+  for (int i = 0; i <= MAX_PRIORITY; i++) {
     queues[i] = createQueue();
   }
 }
 
 void startShell(int pid) {
   currentProcess = findPcb(pid);
+  if (currentProcess == NULL) {
+    return;
+  }
   currentProcess->status = RUNNING;
   schedulerStatus = ON;
   forceProcessChange(currentProcess->stack->current);
@@ -45,18 +53,20 @@ uint8_t getSchedulerStatus() { return schedulerStatus; }
 
 void stopProcess(uint64_t *stackPointer) {
   currentProcess->stack->current = stackPointer;
+    if (currentProcess->priority == IDLE_PRIORITY) {
+        return;
+    }
   if (currentProcess->ticks ==
       quantums[currentProcess->priority]) { // process runed the whole quantum
     if (currentProcess->priority > MIN_PRIORITY) {
       changePriority(currentProcess->pid,
                      currentProcess->priority - 1); // decrease its priority
     } else {
-
       removeProcess(currentProcess);
       addProcess(currentProcess);
     }
   } else { // process didnt run the whole quantum
-    if (currentProcess->priority < MAX_PRIORITY) {
+    if (currentProcess->priority < MAX_PRIORITY && currentProcess->priority > 0) {
       int newPriority = currentProcess->priority +
                         (int)(1 / (double)(currentProcess->ticks /
                                            quantums[currentProcess->priority]));
@@ -80,12 +90,12 @@ uint64_t *changeProcess(uint64_t *rsp) {
   return currentProcess->stack->current;
 }
 
-uint8_t isRunning(void *process) { return ((PCB *)process)->status == RUNNING; }
+uint8_t isReady(void *process) { return ((PCB *)process)->status == READY; }
 
-PCB *getNextProcess() { // preguntar a emi
+PCB *getNextProcess() {
   PCB *elementToReturn;
   for (int i = MAX_PRIORITY; i >= MIN_PRIORITY; i--) {
-    if ((elementToReturn = findElement(queues[i], isRunning)) != NULL) {
+    if ((elementToReturn = findElement(queues[i], isReady)) != NULL) {
       return elementToReturn;
     }
   }
@@ -108,10 +118,23 @@ uint8_t shouldChange() {
   }
 }
 
-void addProcess(PCB *process) { enqueue(queues[process->priority], process); }
+void addProcess(PCB *process) {
+  process->priority = MAX_PRIORITY;
+  process->ticks = 0;
+
+  // Set the current foreground process
+  if (process->pid != 1 && process->pid != 2 && process->foreground == 1) {
+    foregroundProcess = process->pid;
+  }
+
+  // Adding process to the max priority queue.
+  enqueue(queues[process->priority], process);
+  cantProcess++;
+}
 
 void removeProcess(PCB *process) {
   dequeueByData(queues[process->priority], process);
+  cantProcess--;
 }
 
 int auxPid;
@@ -121,7 +144,7 @@ PCB *findPcb(int pid) {
   PCB *elementToReturn;
   auxPid = pid;
   for (int i = MAX_PRIORITY; i >= MIN_PRIORITY; i--) {
-    if ((elementToReturn = findElement(queues[i - 1], isPid)) != NULL) {
+    if ((elementToReturn = findElement(queues[i], isPid)) != NULL) {
       return elementToReturn;
     }
   }
@@ -130,7 +153,7 @@ PCB *findPcb(int pid) {
 
 uint64_t getCurrentPID() { return currentProcess->pid; }
 
-PCB * getCurrentPCB() { return currentProcess; }
+PCB *getCurrentPCB() { return currentProcess; }
 
 int changePriority(int pid, int newPriority) {
   PCB *processToChange = findPcb(pid);
@@ -155,11 +178,11 @@ uint8_t isChild(void *process, int pid) {
   return ((PCB *)process)->parent == pid;
 }
 
-PCB ** getChildren(QueueADT queue, int parentPid) {
-  return (PCB **) findElements(queue, isChild, parentPid);
+PCB **getChildren(QueueADT queue, int parentPid) {
+  return (PCB **)findElements(queue, isChild, parentPid);
 }
 
-QueueADT * getQueues() { return queues; }
+QueueADT *getQueues() { return queues; }
 
 struct PCB *getIdleProcess() {
   return peek(queues[0]);

@@ -1,9 +1,15 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <sync.h>
 
 TSem * semaphores;
 
 void semInit() {
     semaphores = (TSem *) malloc(sizeof(TSem) * MAX_SEMAPHORES);
+    if (semaphores == NULL) {
+        return;
+    }
+
     int i;
     memset(semaphores, 0, sizeof(TSem) * MAX_SEMAPHORES);
     initMutex();
@@ -97,7 +103,7 @@ sem_t findMinFreeSemID() {
 }
 
 int semWait(sem_t sem) {
-    if (semaphores[sem].name == NULL || sem < 0 || sem >= MAX_SEMAPHORES) return -1;
+    if (sem < 0 || sem >= MAX_SEMAPHORES || semaphores[sem].name == NULL) return -1;
     lockMutex(sem);
     if (semaphores[sem].value > 0) {
         semaphores[sem].value--;
@@ -107,13 +113,14 @@ int semWait(sem_t sem) {
     else {
         enqueue(semaphores[sem].blockedProcesses, getCurrentPCB());
         unlockMutex(sem);
-        blockProcess(getCurrentPID());
+        int currentPid = getCurrentPID();
+        blockProcess(currentPid);
         return 0;
     }
 }
 
 int semPost(sem_t sem) {
-    if (semaphores[sem].name == NULL || sem < 0 || sem >= MAX_SEMAPHORES) return -1;
+    if (sem < 0 || sem >= MAX_SEMAPHORES || semaphores[sem].name == NULL) return -1;
     lockMutex(sem);
     if (isEmpty(semaphores[sem].blockedProcesses))
         semaphores[sem].value++;
@@ -166,7 +173,7 @@ void createMutex(int mutexID) {
 }
 
 void deleteMutex(int mutexID) {
-    if (mutexID > MAX_SEMAPHORES || mutexID < 0) {
+    if (mutexID >= MAX_SEMAPHORES || mutexID < 0) {
         return;
     }
     deleteQueue(mutexArray[mutexID].blockedProcesses);

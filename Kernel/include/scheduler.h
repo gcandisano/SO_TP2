@@ -21,8 +21,9 @@ cualquier otra variable que consideren necesaria.
 #define OFF 0
 #define ON 1
 
-#define MIN_PRIORITY 1//este no tendria q ser 0 y el max 5?
-#define MAX_PRIORITY 6
+#define MIN_PRIORITY 1
+#define MAX_PRIORITY 5
+#define IDLE_PRIORITY 0
 
 extern void forceProcessChange(uint64_t * rsp);
 
@@ -38,7 +39,7 @@ void stopProcess(uint64_t *stackPointer);
 
 uint64_t * changeProcess(uint64_t * rsp);
 
-uint8_t isRunning(void * process);
+uint8_t isReady(void * process);
 
 struct PCB * getNextProcess();
 

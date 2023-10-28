@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <mm_manager.h>
 
 struct node {
@@ -16,7 +18,7 @@ void * list_address;
 
 void startMemoryManager(const void * start_address, uint64_t size) {
     list_address = (void *) start_address;
-    memory_list.address = (void *) start_address + 0x10000;
+    memory_list.address = (void *) start_address + 0x100000;
     memory_list.size = size;
     memory_list.is_free = true;
     memory_list.prev = NULL;
@@ -59,6 +61,10 @@ void free(void * address) {
 
     if (current == NULL) {
         return; // Address not found
+    }
+
+    if (current->is_free) {
+        return; // Address already free
     }
 
     current->is_free = true;
