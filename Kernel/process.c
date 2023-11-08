@@ -1,6 +1,7 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <process.h>
+#include <sync.h>
 
 int biggerPid = 1;
 
@@ -16,7 +17,7 @@ int createProcess(char *name, int parent, size_t heapSize, size_t stackSize, cha
     pcb->pid = biggerPid++;
     strcpy(pcb->name, name);
     if (parent == -1) {
-        pcb->parent = getCurrentPID();//habria que crearla 
+        pcb->parent = getCurrentPID();
     } else {
         pcb->parent = parent;
     }
@@ -61,6 +62,7 @@ int createProcess(char *name, int parent, size_t heapSize, size_t stackSize, cha
     pcb->fd[ERROR_FD] = fds[ERROR_FD]; 
     pcb->foreground = foreground;
     pcb->stack->current = createStack((uint64_t *)pcb->stack->base + pcb->stack->size, code, args);
+    pcb->semId = semCreateAnon(0);
     addProcess(pcb);
     return pcb->pid;
 }
@@ -76,6 +78,8 @@ int killProcess(int pid)
     }
     else{
         pcb->status = ZOMBIE;
+        semPost(pcb->semId);
+        semClose(pcb->semId);
     }
     if (pid == getCurrentPID()) {
         forceScheduler();
@@ -120,8 +124,7 @@ void setFileDescriptor(int pid, int index, int value) {
     findPcb(pid)->fd[index] = value;
 }
 
-processInfo *getProcessInfo(int pid)
-{
+processInfo *getProcessInfo(int pid) {
     PCB *pcb = findPcb(pid);
     processInfo *info = malloc(sizeof(processInfo)); 
     if (info == NULL) return NULL;
@@ -141,14 +144,25 @@ processInfo *getProcessInfo(int pid)
     return info;
 }
 
-void freeProcess(PCB *pcb)
-{
+void freeProcess(PCB *pcb) {
     free(pcb->stack->base);
     free(pcb->stack);
     free(pcb->heap->base);
     free(pcb->heap);
     free(pcb->name);
+    semDestroy(pcb->semId);
     free(pcb);
 }
 
+int waitpid(int pid) {
+    PCB * process = findPcb(pid);
 
+    if (process == NULL) {
+        return -1;
+    }
+
+    semWait(process->semId);
+
+    killProcess(process->pid);
+    return pid;
+}

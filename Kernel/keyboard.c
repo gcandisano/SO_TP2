@@ -86,6 +86,13 @@ char getChar() {
     return toReturn;
 }
 
+char getCharNoBlock() {
+    if (elemCount == 0)
+        return 0;
+
+    return getChar();
+}
+
 void initKeyboard() {
     semaphoreId = semCreate("keyboard", 0);
     semOpen("keyboard");

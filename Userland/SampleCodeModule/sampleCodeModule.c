@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 /* sampleCodeModule.c */
 #include <userio.h>
 #include <usyscalls.h>
@@ -14,10 +16,14 @@ int main() {
 		c = getChar();
 	} while (c != 't' && c != 'p');
 
-	getChar();
+	// getChar();
 
-	if (c == 'p')
-		pong();
+	if (c == 'p') {
+		char * args[2] = {"pong", NULL};
+		int fds[3] = {0, 1, 2}; 
+		int pid = sys_create_process("pong", args, &pong, 1, fds);
+		sys_wait_pid(pid);
+	}
 
 	sys_clear_screen();
 

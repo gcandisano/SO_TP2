@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <colors.h>
 #include <userio.h>
 #include <usyscalls.h>
@@ -88,7 +90,7 @@ int commandMatch(char * str1, char * command, int count) {
 	int i = 0;
 	if (count != strlen(command))
 		return 0;
-	while (str1[i] != 0 && command[i] != 0 && str1[i] == command[i] && i < count) {
+	while (i < count && str1[i] != 0 && command[i] != 0 && str1[i] == command[i]) {
 		i++;
 	}
 	return str1[i] == command[i];
@@ -115,7 +117,11 @@ void analizeBuffer(char * buffer, int count) {
 	} else if (commandMatch(buffer, "clear", count)) {
 		sys_clear_screen();
 	} else if (commandMatch(buffer, "pong", count)) {
-		pong();
+		char * args[2] = {"pong", NULL};
+		int fds[3] = {0, 1, 2}; 
+		int pid = sys_create_process("pong", args, &pong, 1, fds);
+		sys_wait_pid(pid);
+		// pong();
 	} else if (commandMatch(buffer, "div0", count)) {
 		divideByZero();
 	} else if (commandMatch(buffer, "invalidop", count)) {
@@ -125,7 +131,7 @@ void analizeBuffer(char * buffer, int count) {
 		sys_draw_image(diego, 100, 100);
 		playBSong();
 		sys_clear_screen();
-	} else if (count > 0) {
+	} else {
 		printColor("\nCommand not found. Type \"help\" for command list\n", RED);
 	}
 }

@@ -5,6 +5,8 @@
 
 uint64_t sys_read(unsigned int fd, char* buffer, unsigned int size);
 
+uint64_t sys_read_no_block(unsigned int fd, char* buffer, unsigned int size);
+
 uint64_t sys_write(unsigned int fd, const char* buffer, unsigned int size);
 
 uint64_t sys_write_color(unsigned int fd, const char* buffer, unsigned int size, uint64_t color);
@@ -30,5 +32,11 @@ uint64_t sys_get_ticks(uint32_t * ticks);
 uint64_t sys_write_place(unsigned int fd, const char* buffer, unsigned int size, int x, int y);
 
 uint64_t sys_draw_image(const unsigned long * image, int width, int height);
+
+uint64_t sys_create_process(char * name, char ** args, void * code, int fg, int * fds);
+
+uint64_t sys_wait_pid(uint64_t pid);
+
+uint64_t sys_exit(uint64_t code);
 
 #endif

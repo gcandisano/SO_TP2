@@ -59,7 +59,6 @@ typedef struct processInfo
 } processInfo;
 
 int createProcess(char *name, int parent, size_t heapSize, size_t stackSize, char **args, void *code, char foreground, int *fds);
-//int getNewPid();
 int killProcess(int pid);
 int killChildren(int parentPid);
 int blockProcess(int pid);
@@ -67,5 +66,6 @@ int unblockProcess(int pid);
 void setFileDescriptor(int pid, int index, int value);
 processInfo *getProcessInfo(int pid);
 void freeProcess(PCB *processPcb);
+int waitpid(int pid);
 
 #endif

@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <usyscalls.h>
 #include <userio.h>
 #include <stdarg.h>
@@ -27,6 +29,12 @@ void printColorChar(char c, uint64_t color) {
 char getChar() {
     char c[] = {0};
     sys_read(0, c, 1);
+    return c[0];
+}
+
+char getCharNoBlock() {
+    char c[] = {0};
+    sys_read_no_block(0, c, 1);
     return c[0];
 }
 

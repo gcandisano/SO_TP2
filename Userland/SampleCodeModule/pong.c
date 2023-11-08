@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <usyscalls.h>
 #include <colors.h>
 #include <userio.h>
@@ -7,14 +9,14 @@
 // PLAYER_DISTANCE_FROM_BORDER
 #define PDFB 25
 // Player min height
-#define P_MIN_H height/10
+#define P_MIN_H (height / 10)
 // Plyer max height
 #define P_MAX_H 580
 
 #define LINE_WIDTH 5
 #define SPACE_TO_LINE 10
-#define LINE_TOP height/12
-#define LINE_BOTTOM (height-5)
+#define LINE_TOP (height / 12)
+#define LINE_BOTTOM (height - 5)
 
 uint16_t width;
 uint16_t height;
@@ -177,7 +179,7 @@ void win(int color, int player) {
         winner = "Player 2 wins!";
     }
 
-    while (getChar() != 0) {
+    while (getCharNoBlock() != 0) {
         ; // Cleans buffer
     }
 
@@ -185,7 +187,7 @@ void win(int color, int player) {
     sys_write_color(STDOUT, "\n\nPress R to play again or any key to continue...", 49, color);
     
     char c;
-    while ((c = getChar()) == 0) {
+    while ((c = getCharNoBlock()) == 0) {
         ;
     }
 
@@ -254,7 +256,7 @@ void pong() {
     sys_write_color(STDOUT, "Press any key to start...", 25, WHITE);
     sys_write_place(STDOUT, "Press P to pause/unpause the game", 33, 740, 15);
     sys_write_place(STDOUT, "Press ESC to exit", 33, 740, 35);
-    while (getChar() == 0) {
+    while (getCharNoBlock() == 0) {
         ;
     }
 
@@ -283,7 +285,7 @@ void pong() {
         while (!goalMade) {
             unsigned char c;
             do {
-                c = getChar();
+                c = getCharNoBlock();
                 handleKey(c, moves);
             } while (c != 0 && c != 1 && c != 'p');
 
@@ -305,13 +307,13 @@ void pong() {
             if (c == 0x01) {
                 sys_toggle_cursor();
                 sys_clear_screen();
-                return;
+                sys_exit(0);
             }
             // If P pressed, pause
             if (c == 'p') {
                 sys_draw_rectangle(440, 35, 18*8, 20, BLACK);
                 sys_write_place(STDOUT, "PAUSED", 6, 485, 35);
-                while (getChar() != 'p') {
+                while (getCharNoBlock() != 'p') {
                     ;
                 }
                 sys_draw_rectangle(440, 35, 18*8, 20, BLACK);
@@ -321,4 +323,5 @@ void pong() {
         goalMade = 0;
     }
     sys_clear_screen();
+    sys_exit(0);
 }
