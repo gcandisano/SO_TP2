@@ -65,4 +65,6 @@ QueueADT * getQueues();
 
 struct PCB * getIdleProcess();
 
+int getForegroundProcess();
+
 #endif

@@ -106,6 +106,8 @@ PCB *getNextProcess() {
   }
 }
 
+int getForegroundProcess() { return foregroundProcess; }
+
 uint8_t shouldChange() {
   if (currentProcess->status != RUNNING) {
     return 1;

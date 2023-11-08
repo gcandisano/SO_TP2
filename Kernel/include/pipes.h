@@ -26,5 +26,6 @@ void sendEOF(int id);
 int getPipeId(int name);
 int readPipe(int id, char *dest, unsigned int count);
 int writePipe(int id, const char *src, unsigned int count);
+void sendEOFToCurrent();
 
 #endif

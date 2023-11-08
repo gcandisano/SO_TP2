@@ -87,6 +87,16 @@ int killProcess(int pid)
     return 0;
 }
 
+int killForeground(int sem) {
+    PCB *pcb = findPcb(getForegroundProcess());
+    if (pcb == NULL) 
+        return -1;
+    killChildren(pcb->pid);
+    if (pcb->status == BLOCKED)
+        semSet(sem, 1);
+    return killProcess(pcb->pid);
+}
+
 int killChildren(int parentPid) {
     int count = 0;
     QueueADT * myQueues = getQueues();

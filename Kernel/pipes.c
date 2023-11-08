@@ -9,7 +9,7 @@ int firstEOF = 1;
 
 void pipesInit() {
     pipesArr[0].name = 0;
-    for (int i = 0; i < MAX_PIPES; i++) {
+    for (int i = 1; i < MAX_PIPES; i++) {
         pipesArr[i].name = -1;
     }
 }
@@ -112,4 +112,11 @@ int writePipe(int id, const char *src, unsigned int count) {
         semPost(pipesArr[id].readSemId);
     }
     return 1;
+}
+
+void sendEOFToCurrentProcess() {
+    PCB* pcb=findPcb(getForegroundProcess());
+    if (pcb->fd[READ_FD] != -1) {
+        sendEOF(pcb->fd[READ_FD]);
+    }
 }

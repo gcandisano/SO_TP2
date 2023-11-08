@@ -39,7 +39,6 @@ typedef struct PCB
     memoryBlock *heap;
     memoryBlock *stack;
     int status;
-    int return_value;
     int fd[3];
     char foreground;
     int semId;

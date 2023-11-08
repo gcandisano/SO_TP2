@@ -9,6 +9,7 @@ static int writeIndex = 0;
 
 static char shiftPressed = 0;
 static char capsLocked = 0;
+static char ctrlPressed = 0;
 
 int semaphoreId;
 
@@ -38,7 +39,7 @@ char isLetter(unsigned char key) {
 
 void keyboard_handler() {
     unsigned char key = getKey();
-    if (key < 83 || key == 0xAA/* Release SHIFT */ || key == 0x3A /* CAPS Lock */) { // 83 elems in the charHexMap
+    if (key < 83 || key == RELEASE_SHIFT || key == CAPS_LOCK) { // 83 elems in the charHexMap
         if (elemCount >= BUFFER_SIZE) return;  // buffer is full
         
         // make the array circular
@@ -49,11 +50,11 @@ void keyboard_handler() {
             shiftPressed = 1;
             return;
         }
-        if (key == 0xAA) { // Shift released
+        if (key == RELEASE_SHIFT) { // Shift released
             shiftPressed = 0;
             return;
         }
-        if (key == 0x3A) { // Caps Lock
+        if (key == CAPS_LOCK) { // Caps Lock
             capsLocked = !capsLocked;
             return;
         }
