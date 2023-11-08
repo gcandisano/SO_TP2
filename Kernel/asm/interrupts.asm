@@ -298,9 +298,9 @@ _exception0Handler:
 _exception6Handler:
 	exceptionHandler 6
 
-createStack: ;RDI EL STACK - RSI CODE - RDX ARGS 
-	mov r8,rsp ; preservo viejo RSP
-	mov rsp,rdi
+createStack: ; RDI STACK - RSI CODE - RDX ARGS 
+	mov r8, rsp ; preservo viejo RSP
+	mov rsp, rdi
 	push 0x0 ; el SS
 	push rdi ; el RSP
 	push 0x202 ; el RFLAGS
@@ -309,20 +309,20 @@ createStack: ;RDI EL STACK - RSI CODE - RDX ARGS
 	push rsi ; el RIP ahora es el wrapper.
 
 	push 0x0 ; el RAX
-	push 0x1 ;rbx
-    push 0x2 ;rcx
+	push 0x1 ; rbx
+    push 0x2 ; rcx
     push 0x3 ; rdx
-    push 0x4 ;rbp
-    push RSI ; RDI->PRIMER ARGUMENTO WRAPPER (code)
-    push RDX ; RSI->SEGUNDO ARGUMENTO WRAPPER. (args del code)
-    push 0x7 ; r8
-    push 0x8 ; r9
-    push 0x9 ; r10
-    push 0x10 ; r11
-    push 0x11 ; r12
-    push 0x12 ; r13
-    push 0x13 ; r14
-    push 0x14 ; r15
+    push 0x4 ; rbp
+    push rsi ; rdi
+    push rdx ; rsi
+    push 0x8 ; r8
+    push 0x9 ; r9
+    push 0x10 ; r10
+    push 0x11 ; r11
+    push 0x12 ; r12
+    push 0x13 ; r13
+    push 0x14 ; r14
+    push 0x15 ; r15
 	mov rax,rsp ; el RSP
 	mov rsp,r8 ; restauro el RSP
 	ret
