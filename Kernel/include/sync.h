@@ -48,6 +48,8 @@ int semWait(sem_t sem);
 
 int semPost(sem_t sem);
 
+int semSet(int semId, int value);
+
 extern int enterCritRegion(char * semValue);
 
 // MUTEX

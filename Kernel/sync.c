@@ -133,6 +133,24 @@ int semPost(sem_t sem) {
     return 0;
 }
 
+int semSet(int semId, int value) {
+    if (semId < 0 || semId > MAX_SEMAPHORES|| value < 0) {
+        return -1;
+    }
+
+    lockMutex(semId);
+    if (semaphores[semId].value == 0) {
+        unlockMutex(semId);
+        for (int i = 0; i < value; i++) { 
+            semPost(semId);
+        }
+        return 0;
+    }
+    semaphores[semId].value = value;
+    unlockMutex(semId);
+    return 0;
+}
+
 
 // MUTEX
 
@@ -162,7 +180,7 @@ void unlockMutex(int mutexID) {
 }
 
 void createMutex(int mutexID) {
-    if (mutexID >= MAX_SEMAPHORES || mutexID < 0) {
+    if (mutexID < 0 || mutexID >= MAX_SEMAPHORES)  {
         return;
     }
     if (mutexArray[mutexID].blockedProcesses == NULL) {
@@ -173,7 +191,7 @@ void createMutex(int mutexID) {
 }
 
 void deleteMutex(int mutexID) {
-    if (mutexID >= MAX_SEMAPHORES || mutexID < 0) {
+    if (mutexID < 0 || mutexID >= MAX_SEMAPHORES ) {
         return;
     }
     deleteQueue(mutexArray[mutexID].blockedProcesses);
