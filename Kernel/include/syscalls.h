@@ -52,4 +52,6 @@ static int64_t sys_mem_data();
 
 static int64_t sys_processes_info();
 
+static int64_t sys_kill_process(uint64_t pid);
+
 #endif

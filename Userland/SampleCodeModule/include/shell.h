@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <structs.h>
+#include <uStrings.h>
 
 #define READY   0
 #define BLOCKED 1
@@ -21,8 +22,10 @@ void analizeBuffer(char * buffer, int count);
 
 void memInfo();
 
-void processesInfo();
+int processesInfo();
 
 void infiniteLoop();
+
+int killProcess();
 
 #endif

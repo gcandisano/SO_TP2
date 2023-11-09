@@ -46,8 +46,9 @@ int createProcess(char * name, int parent, size_t stackSize, char ** args, void 
 	pcb->fd[WRITE_FD] = fds[WRITE_FD];
 	pcb->fd[ERROR_FD] = fds[ERROR_FD];
 	pcb->foreground = foreground;
-	pcb->stack->current = createStack((uint64_t *) pcb->stack->base + pcb->stack->size, code, args);
+	pcb->stack->current = createStack((uint64_t *) pcb->stack->base + pcb->stack->size, code, args, &processWrapper);
 	pcb->semId = semCreateAnon(0);
+	pcb->exitCode = 0;
 
 	processes[cantProcesses++] = pcb;
 	// TODO: Ver que se agregue bien
@@ -56,10 +57,17 @@ int createProcess(char * name, int parent, size_t stackSize, char ** args, void 
 	return pcb->pid;
 }
 
+void processWrapper(int code(char ** args), char ** args) {
+	PCB * currentPcb = getCurrentPCB();
+	semAnonOpen(currentPcb->semId);
+	currentPcb->exitCode = code(args);
+	killProcess(currentPcb->pid);
+}
+
 int killProcess(int pid) {
 	PCB * pcb = findPcb(pid);
 	if (pcb == NULL)
-		return -1;
+		return 1;
 	if (findPcb(pcb->parent) == NULL || pcb->status == ZOMBIE) {
 		pcb->status = DEAD;
 		removeProcess(pcb);
@@ -68,6 +76,7 @@ int killProcess(int pid) {
 		cantProcesses--;
 	} else {
 		pcb->status = ZOMBIE;
+		pcb->exitCode = 9;
 		semPost(pcb->semId);
 		semClose(pcb->semId);
 	}
@@ -79,7 +88,7 @@ int killProcess(int pid) {
 int killForeground(int sem) {
 	PCB * pcb = findPcb(getForegroundProcess());
 	if (pcb == NULL)
-		return -1;
+		return 1;
 	killChildren(pcb->pid);
 	if (pcb->status == BLOCKED)
 		semSet(sem, 1);
@@ -140,6 +149,7 @@ processInfo * getProcessInfo(PCB * pcb) {
 	info->foreground = pcb->foreground;
 	info->rsp = pcb->stack->current;
 	info->rbp = pcb->stack->base;
+	info->exitCode = pcb->exitCode;
 	return info;
 }
 
@@ -183,4 +193,9 @@ int waitpid(int pid) {
 
 	killProcess(process->pid);
 	return pid;
+}
+
+void resetProcesses() {
+	cantProcesses = 0;
+	biggerPid = 1;
 }

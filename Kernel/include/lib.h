@@ -11,7 +11,7 @@ char * cpuVendor(char * result);
 /* Used for sound */
 void outb(int memoryMap, int output);
 int inb(int memoryMap);
-uint64_t * createStack(uint64_t * stackStart, void * code, char ** args);
+uint64_t * createStack(uint64_t * stackStart, void * code, char ** args, void * wrapper);
 void forceScheduler();
 
 unsigned int strlen(char * str);

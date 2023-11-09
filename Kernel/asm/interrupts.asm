@@ -16,6 +16,7 @@ GLOBAL _int80Handler
 
 GLOBAL _exception0Handler
 GLOBAL _exception6Handler
+GLOBAL _exception13Handler
 
 GLOBAL createStack
 GLOBAL forceScheduler
@@ -298,15 +299,19 @@ _exception0Handler:
 _exception6Handler:
 	exceptionHandler 6
 
-createStack: ; RDI STACK - RSI CODE - RDX ARGS 
-	mov r8, rsp ; preservo viejo RSP
+;Invalid Opcde Exception
+_exception13Handler:
+	exceptionHandler 13
+
+createStack: ; RDI STACK - RSI CODE - RDX ARGS - RCX WRAPPER 
+	mov r8, rsp	 ; preservo viejo RSP
 	mov rsp, rdi
 	push 0x0 ; el SS
 	push rdi ; el RSP
 	push 0x202 ; el RFLAGS
 	push 0x8 ; el CS
 
-	push rsi ; el RIP ahora es el wrapper.
+	push rcx ; el RIP ahora es el wrapper.
 
 	push 0x0 ; el RAX
 	push 0x1 ; rbx

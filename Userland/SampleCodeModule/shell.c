@@ -8,10 +8,10 @@
 #include <userio.h>
 #include <usyscalls.h>
 
-#define COMMANDS_QUANTITY 9
+#define COMMANDS_QUANTITY (sizeof(commandsNames) / sizeof(char *))
 
 static char * commandsNames[] = {
-    "help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear", "mem", "ps"};
+    "help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear", "mem", "ps", "kill"};
 
 static char * commands[] = {
     "\thelp: gives you a list of all existent commands.\n",
@@ -25,7 +25,12 @@ static char * commands[] = {
     "\tclear: clears the OS screen.\n",
     "\tmem: prints memory status.\n",
     "\tps: prints processes info.\n",
+    "\tkill: kill processes by pid.\n",
 };
+
+char * loopArgs[2] = {"loop", NULL};
+
+int fds[3] = {0, 1, 2};
 
 void shell() {
 	printColor("Welcome to HomerOS. Type \"help\" for command list\n", ORANGE);
@@ -89,10 +94,12 @@ void shell() {
 
 int commandMatch(char * str1, char * command, int count) {
 	int i = 0;
-	if (count != strlen(command))
-		return 0;
 	while (i < count && str1[i] != 0 && command[i] != 0 && str1[i] == command[i]) {
 		i++;
+		if (str1[i] == ' ') {
+			i--;
+			break;
+		}
 	}
 	return str1[i] == command[i];
 }
@@ -122,25 +129,24 @@ void analizeBuffer(char * buffer, int count) {
 		int fds[3] = {0, 1, 2};
 		int pid = sys_create_process("pong", args, &pong, 1, fds);
 		sys_wait_pid(pid);
-		// pong();
 	} else if (commandMatch(buffer, "div0", count)) {
 		divideByZero();
 	} else if (commandMatch(buffer, "invalidop", count)) {
 		invalidOpcode();
 	} else if (commandMatch(buffer, "mem", count)) {
 		char * args[2] = {"mem", NULL};
-		int fds[3] = {0, 1, 2};
 		int pid = sys_create_process("mem", args, &memInfo, 1, fds);
 		sys_wait_pid(pid);
 	} else if (commandMatch(buffer, "ps", count)) {
 		char * args[2] = {"ps", NULL};
-		int fds[3] = {0, 1, 2};
 		int pid = sys_create_process("ps", args, &processesInfo, 1, fds);
 		sys_wait_pid(pid);
+	} else if (commandMatch(buffer, "kill", count)) {
+		char * args[3] = {"kill", &(buffer[5]), NULL};
+		int pid = sys_create_process("kill", args, &killProcess, 1, fds);
+		sys_wait_pid(pid);
 	} else if (commandMatch(buffer, "loop", count)) {
-		char * args[2] = {"loop", NULL};
-		int fds[3] = {0, 1, 2};
-		int pid = sys_create_process("loop", args, &infiniteLoop, 1, fds);
+		sys_create_process("loop", loopArgs, &infiniteLoop, 1, fds);
 	} else if (commandMatch(buffer, "boca", count)) {
 		sys_clear_screen();
 		sys_draw_image(diego, 100, 100);
@@ -154,17 +160,17 @@ void analizeBuffer(char * buffer, int count) {
 void memInfo() {
 	MemoryDataPtr memData = sys_mem_data();
 	printfColor("\n\nMemory info:\n", YELLOW);
-	printfColor("Total memory: %d bytes\n", CYAN, memData->total);
-	printfColor("Used memory: %d bytes\n", CYAN, memData->used);
-	printfColor("Free memory: %d bytes\n", CYAN, memData->free);
-	sys_exit(0);
+	printfColor("\tTotal memory: %d bytes\n", CYAN, memData->total);
+	printfColor("\tUsed memory: %d bytes\n", CYAN, memData->used);
+	printfColor("\tFree memory: %d bytes\n", CYAN, memData->free);
+	return;
 }
 
-void processesInfo() {
+int processesInfo() {
 	ProcessInfoPtr * processesInfo = sys_processes_info();
 	if (processesInfo == NULL) {
 		printfColor("\n\nNo processes running\n", YELLOW);
-		sys_exit(1);
+		return 1;
 	}
 	printfColor("\n\nProcesses info:\n", YELLOW);
 	int i = 0;
@@ -185,10 +191,10 @@ void processesInfo() {
 				printf("\t   Running");
 				break;
 			case ZOMBIE:
-				printf("\t   Zombie ");
+				printf("\t Zombie(%d)", processesInfo[i]->exitCode);
 				break;
 			case DEAD:
-				printf("\t    Dead  ");
+				printf("\t   Dead(%d)", processesInfo[i]->exitCode);
 				break;
 			default:
 				printf("\t   Unknown");
@@ -199,10 +205,25 @@ void processesInfo() {
 		printf("\t%s\n", processesInfo[i]->name);
 		i++;
 	}
-	sys_exit(0);
+	return 0;
 }
 
-void infiniteLoop() {
+void infiniteLoop(char ** argv) {
 	while (1)
 		;
+}
+
+int killProcess(char ** argv) {
+	if (argv[1] == 0) {
+		printfColor("\n\nNo process id specified\n", RED);
+		return 1;
+	}
+	int zero = 0;
+	int pid = strtoi(argv[1], &zero);
+	int response = sys_kill_process(pid);
+	if (response != 0) {
+		printfColor("\n\nProcess %d not found\n", RED, pid);
+		return 1;
+	}
+	return 0;
 }

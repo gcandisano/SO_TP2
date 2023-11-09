@@ -15,7 +15,7 @@ los hijos terminen */
 
 uint8_t schedulerStatus = OFF;
 
-uint8_t quantums[6] = {0, 16, 8, 4, 2, 1};
+uint8_t quantums[6] = {0, 1, 2, 4, 8, 16};
 
 QueueADT queues[MAX_PRIORITY + 1];
 
@@ -28,6 +28,9 @@ void startScheduler() {
 	for (int i = 0; i <= MAX_PRIORITY; i++) {
 		queues[i] = createQueue();
 	}
+	currentProcess = NULL;
+	schedulerStatus = OFF;
+	resetProcesses();
 }
 
 void startShell(int pid) {
@@ -62,10 +65,11 @@ void stopProcess(uint64_t * stackPointer) {
 		if (currentProcess->priority > MIN_PRIORITY) {
 			changePriority(currentProcess->pid,
 			               currentProcess->priority - 1);  // decrease its priority
-		} else {
-			removeProcess(currentProcess);
-			addProcess(currentProcess);
 		}
+		/*  else {
+		    removeProcess(currentProcess);
+		    addProcess(currentProcess);
+		} */
 	} else {  // process didnt run the whole quantum
 		if (currentProcess->priority < MAX_PRIORITY && currentProcess->priority > 0) {
 			int newPriority = currentProcess->priority +

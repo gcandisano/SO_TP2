@@ -30,7 +30,7 @@ uint64_t atoi(char * str) {
 }
 
 int strtoi(char * buffer, int * i) {
-	char str[18];
+	char str[18] = {0};
 	int size = 0;
 	while (buffer[*i] != ' ' && buffer[*i] != '\n' && buffer[*i] != 0) {
 		str[size++] = buffer[*i];
