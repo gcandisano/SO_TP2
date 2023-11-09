@@ -11,7 +11,7 @@
 
 #define COMMANDS_QUANTITY 9
 
-static char * commandsNames[] = {"help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear"};
+static char * commandsNames[] = {"help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear", "mem", "ps"};
 
 static char *commands[] = {
 	"\thelp: gives you a list of all existent commands.\n",
@@ -22,7 +22,9 @@ static char *commands[] = {
 	"\tdiv0: divide by zero to trigger exception\n",
 	"\tinvalidop: trigger invalid operation code exception\n",
 	"\tpong: go to play the \"pong\" game.\n",
-	"\tclear: clears the OS screen.\n"
+	"\tclear: clears the OS screen.\n",
+	"\tmem: prints memory status.\n",
+	"\tps: prints processes info.\n",
 };
 
 void shell() {
@@ -126,6 +128,20 @@ void analizeBuffer(char * buffer, int count) {
 		divideByZero();
 	} else if (commandMatch(buffer, "invalidop", count)) {
 		invalidOpcode();
+	} else if (commandMatch(buffer, "mem", count)) {
+		char * args[2] = {"mem", NULL};
+		int fds[3] = {0, 1, 2}; 
+		int pid = sys_create_process("mem", args, &memInfo, 1, fds);
+		sys_wait_pid(pid);
+	} else if (commandMatch(buffer, "ps", count)) {
+		char * args[2] = {"ps", NULL};
+		int fds[3] = {0, 1, 2}; 
+		int pid = sys_create_process("ps", args, &processesInfo, 1, fds);
+		sys_wait_pid(pid);
+	} else if (commandMatch(buffer, "loop", count)) {
+		char * args[2] = {"loop", NULL};
+		int fds[3] = {0, 1, 2}; 
+		int pid = sys_create_process("loop", args, &infiniteLoop, 1, fds);
 	} else if (commandMatch(buffer, "boca", count)) {
 		sys_clear_screen();
 		sys_draw_image(diego, 100, 100);
@@ -134,4 +150,60 @@ void analizeBuffer(char * buffer, int count) {
 	} else {
 		printColor("\nCommand not found. Type \"help\" for command list\n", RED);
 	}
+}
+
+void memInfo() {
+	MemoryDataPtr memData = sys_mem_data();
+	printfColor("\n\nMemory info:\n", YELLOW);
+	printfColor("Total memory: %d bytes\n", CYAN, memData->total);
+	printfColor("Used memory: %d bytes\n", CYAN, memData->used);
+	printfColor("Free memory: %d bytes\n", CYAN, memData->free);
+	sys_exit(0);
+}
+
+void processesInfo() {
+	ProcessInfoPtr * processesInfo = sys_processes_info();
+	if (processesInfo == NULL) {
+		printfColor("\n\nNo processes running\n", YELLOW);
+		sys_exit(1);
+	}
+	printfColor("\n\nProcesses info:\n", YELLOW);
+	int i = 0;
+	printColor("  PID\tPriority\tParent\tForeground\tStatus\t   RSP   \t RBP\t   Name\n", CYAN);
+	while (processesInfo[i] != NULL) {
+		printf("   %d", processesInfo[i]->pid);
+		printf(processesInfo[i]->pid > 9 ? "    \t%d" : "     \t%d", processesInfo[i]->priority);
+		printf("\t\t %d", processesInfo[i]->parent);
+		printf("\t\t  %d", processesInfo[i]->foreground);
+		switch (processesInfo[i]->status) {
+			case READY:
+				printf("\t    Ready ");
+				break;
+			case BLOCKED:
+				printf("\t   Blocked");
+				break;
+			case RUNNING:
+				printf("\t   Running");
+				break;
+			case ZOMBIE:
+				printf("\t   Zombie ");
+				break;
+			case DEAD:
+				printf("\t    Dead  ");
+				break;
+			default:
+				printf("\t   Unknown");
+				break;
+		}
+		printf("\t%x", processesInfo[i]->rsp);
+		printf("   %x", processesInfo[i]->rbp);
+		printf("\t%s\n", processesInfo[i]->name);
+		i++;
+	}
+	sys_exit(0);
+}
+
+void infiniteLoop() {
+	while(1)
+		;
 }

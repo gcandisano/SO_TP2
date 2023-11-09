@@ -1,14 +1,6 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <stdint.h>
-#include <videodriver.h>
-#include <defs.h>
 #include <syscalls.h>
-#include <keyboard.h>
-#include <clock.h>
-#include <sound.h>
-#include <time.h>
-#include <process.h>
 
 extern const uint64_t registers[17];
 
@@ -48,6 +40,10 @@ int64_t syscallHandler(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2,
             return (int64_t) sys_wait_pid(arg0);
         case 16:
             return (int64_t) sys_exit(arg0);
+        case 17:
+            return (int64_t) sys_mem_data();
+        case 18:
+            return (int64_t) sys_processes_info();
     }
     return -1;
 } 
@@ -152,7 +148,7 @@ static int64_t sys_draw_image(uint64_t image, uint64_t width, uint64_t height) {
 }
 
 static int64_t sys_create_process(uint64_t name, uint64_t args, uint64_t code, uint64_t fg, uint64_t fds) {
-    return (int64_t) createProcess((char *)name, -1, 4096, 4096, (char **)args, (void *)code, (char)fg, (int *)fds);
+    return (int64_t) createProcess((char *)name, -1, 4096, (char **)args, (void *)code, (char)fg, (int *)fds);
 }
 
 static int64_t sys_wait_pid(uint64_t pid) {
@@ -161,4 +157,12 @@ static int64_t sys_wait_pid(uint64_t pid) {
 
 static int64_t sys_exit(uint64_t code) {
     return killProcess((int)getCurrentPID());
+}
+
+static int64_t sys_mem_data() {
+    return (int64_t) getMemoryData();
+}
+
+static int64_t sys_processes_info() {
+    return (int64_t) getProcessesInfo();
 }

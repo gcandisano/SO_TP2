@@ -2,6 +2,16 @@
 #define SYSCALLS_H
 
 #include <stdint.h>
+#include <stdint.h>
+#include <videodriver.h>
+#include <defs.h>
+#include <syscalls.h>
+#include <keyboard.h>
+#include <clock.h>
+#include <sound.h>
+#include <time.h>
+#include <process.h>
+#include <mm_manager.h>
 
 int64_t syscallHandler(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4);
 
@@ -38,5 +48,9 @@ static int64_t sys_create_process(uint64_t name, uint64_t args, uint64_t code, u
 static int64_t sys_wait_pid(uint64_t pid);
 
 static int64_t sys_exit(uint64_t code);
+
+static int64_t sys_mem_data();
+
+static int64_t sys_processes_info();
 
 #endif

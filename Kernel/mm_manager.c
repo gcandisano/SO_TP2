@@ -2,17 +2,9 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <mm_manager.h>
 
-struct node {
-    void * address;
-    uint64_t size;
-    bool is_free;
-    struct node * prev;
-    struct node * next;
-};
-
-typedef struct node * NodePtr;
-
 struct node memory_list;
+
+memoryData memory_data;
 
 void * list_address;
 
@@ -23,6 +15,10 @@ void startMemoryManager(const void * start_address, uint64_t size) {
     memory_list.is_free = true;
     memory_list.prev = NULL;
     memory_list.next = NULL;
+
+    memory_data.total = size;
+    memory_data.free = size;
+    memory_data.used = 0;
 }
 
 void * malloc(uint64_t size) {
@@ -50,6 +46,9 @@ void * malloc(uint64_t size) {
     current->is_free = false;
     current->next = new_node;
 
+    memory_data.free -= size;
+    memory_data.used += size;
+
     return current->address;
 }
 
@@ -69,6 +68,9 @@ void free(void * address) {
 
     current->is_free = true;
 
+    memory_data.free += current->size;
+    memory_data.used -= current->size;
+
     if (current->prev != NULL && current->prev->is_free) {
         current->prev->size += current->size;
         current->prev->next = current->next;
@@ -81,4 +83,8 @@ void free(void * address) {
         current->next = current->next->next;
         current->next->prev = current;
     }
+}
+
+MemoryDataPtr getMemoryData() {
+    return &memory_data;
 }

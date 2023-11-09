@@ -2,6 +2,7 @@
 #define USYSCALLS_H
 
 #include <stdint.h>
+#include <structs.h>
 
 uint64_t sys_read(unsigned int fd, char* buffer, unsigned int size);
 
@@ -38,5 +39,9 @@ uint64_t sys_create_process(char * name, char ** args, void * code, int fg, int 
 uint64_t sys_wait_pid(uint64_t pid);
 
 uint64_t sys_exit(uint64_t code);
+
+MemoryDataPtr sys_mem_data();
+
+ProcessInfoPtr * sys_processes_info();
 
 #endif

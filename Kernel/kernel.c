@@ -79,10 +79,10 @@ int main() {
   
   startScheduler();
 
-  int shell = createProcess("shell", 0, 8192, 8192, shellArgs,
+  int shell = createProcess("shell", 0, 8192, shellArgs,
                             sampleCodeModuleAddress, 1, defaultFds);
 
-  int idlePid = createProcess("idle", 0, 1024, 1024, idleArgs, &idle, 1,
+  int idlePid = createProcess("idle", 0, 1024, idleArgs, &idle, 1,
                               defaultFds);
 
   changePriority(idlePid, 0);

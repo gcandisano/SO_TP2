@@ -21,7 +21,7 @@ QueueADT queues[MAX_PRIORITY + 1];
 
 struct PCB *currentProcess;
 
-size_t cantProcess = 0;
+// size_t cantProcess = 0;
 int foregroundProcess;
 
 void startScheduler() {
@@ -131,12 +131,12 @@ void addProcess(PCB *process) {
 
   // Adding process to the max priority queue.
   enqueue(queues[process->priority], process);
-  cantProcess++;
+  // cantProcess++;
 }
 
 void removeProcess(PCB *process) {
   dequeueByData(queues[process->priority], process);
-  cantProcess--;
+  // cantProcess--;
 }
 
 int auxPid;

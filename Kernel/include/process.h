@@ -20,23 +20,19 @@
 
 #define MAX_PROCESSES 100
 
-typedef struct memoryBlock
-{
+typedef struct memoryBlock {
     uint64_t *base;
     size_t size;
     uint64_t *current;
 } memoryBlock;
 
-
-typedef struct PCB
-{
+typedef struct PCB {
     size_t priority;
     size_t ticks;
 
     int pid;
     char *name;
     int parent;
-    memoryBlock *heap;
     memoryBlock *stack;
     int status;
     int fd[3];
@@ -45,8 +41,7 @@ typedef struct PCB
 
 } PCB;
 
-typedef struct processInfo
-{
+typedef struct processInfo {
     char *name;
     int pid;
     int parent;
@@ -57,14 +52,23 @@ typedef struct processInfo
     int status; 
 } processInfo;
 
-int createProcess(char *name, int parent, size_t heapSize, size_t stackSize, char **args, void *code, char foreground, int *fds);
+
+int createProcess(char *name, int parent, size_t stackSize, char **args, void *code, char foreground, int *fds);
+
 int killProcess(int pid);
+
 int killChildren(int parentPid);
+
 int blockProcess(int pid);
+
 int unblockProcess(int pid);
+
 void setFileDescriptor(int pid, int index, int value);
-processInfo *getProcessInfo(int pid);
+
+processInfo ** getProcessesInfo();
+
 void freeProcess(PCB *processPcb);
+
 int waitpid(int pid);
 
 #endif

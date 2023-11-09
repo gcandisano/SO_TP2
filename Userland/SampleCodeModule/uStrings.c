@@ -48,9 +48,14 @@ void intToStr(int num, char* str) {
         num = -num;
     }
     int aux = num;
-    while (aux > 0) {
-        aux /= 10;
+    if (aux == 0) {
+        str[i] = '0';
         i++;
+    } else {
+        while (aux > 0) {
+            aux /= 10;
+            i++;
+        }
     }
     str[i] = 0;
     i--;
@@ -61,10 +66,10 @@ void intToStr(int num, char* str) {
     }
 }
 
-// Convert 64 bit integer to hex string
+// Convert 32 bit integer to hex string
 void intToHex(uint64_t num, char* hex) {
     int i = 0;
-    for (i = 15; i >= 0; i--) {
+    for (i = 8; i >= 0; i--) {
         int aux = num & 0xF;
         if (aux < 10) {
             hex[i] = aux + '0';
@@ -73,7 +78,7 @@ void intToHex(uint64_t num, char* hex) {
         }
         num >>= 4;
     }
-    hex[16] = 0;
+    hex[9] = 0;
 }
 
 unsigned int strlen(char* str) {
