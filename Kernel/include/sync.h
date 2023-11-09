@@ -1,40 +1,40 @@
 #ifndef SYNC_H
-#define SYNC_H 
+#define SYNC_H
 
-#include <scheduler.h>
+#include <mm_manager.h>
 #include <process.h>
 #include <queueADT.h>
-#include <mm_manager.h>
+#include <scheduler.h>
 
-#define MAX_SEMAPHORES 200
+#define MAX_SEMAPHORES       200
 #define FIRST_USER_SEMAPHORE 100
 
 typedef int sem_t;
 
 typedef struct TSem {
-    char *name;
-    size_t value;
-    QueueADT blockedProcesses;
-    bool activeProcesses[MAX_PROCESSES]; // Keeps track of the processes that have permission to access the semaphore
-    size_t activeProcessDim;
-    bool destroying;
+	char * name;
+	size_t value;
+	QueueADT blockedProcesses;
+	bool activeProcesses[MAX_PROCESSES];  // Keeps track of the processes that have permission to access the semaphore
+	size_t activeProcessDim;
+	bool destroying;
 } TSem;
 
 typedef struct TMutex {
-    QueueADT blockedProcesses;
-    char value;
-    int currentOwnerPID;
+	QueueADT blockedProcesses;
+	char value;
+	int currentOwnerPID;
 } TMutex;
 
 void semInit();
 
-sem_t semCreate(char *name, int initValue);
+sem_t semCreate(char * name, int initValue);
 
 int semDestroy(sem_t id);
 
-int userExists(char *name);
+int userExists(char * name);
 
-sem_t semOpen(char *semName);
+sem_t semOpen(char * semName);
 
 sem_t semClose(sem_t sem);
 

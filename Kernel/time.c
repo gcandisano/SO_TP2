@@ -18,9 +18,9 @@ int seconds_elapsed() {
 	return ticks / 18;
 }
 
-void timer_wait(int delta) { 
+void timer_wait(int delta) {
 	int initialTicks = ticks;
-	while(ticks - initialTicks < delta) {
+	while (ticks - initialTicks < delta) {
 		_hlt();
 	}
 }

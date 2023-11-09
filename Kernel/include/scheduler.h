@@ -14,15 +14,15 @@ cualquier otra variable que consideren necesaria.
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
-#include <stdint.h>
-#include <queueADT.h>
 #include <process.h>
+#include <queueADT.h>
+#include <stdint.h>
 
 #define OFF 0
-#define ON 1
+#define ON  1
 
-#define MIN_PRIORITY 1
-#define MAX_PRIORITY 5
+#define MIN_PRIORITY  1
+#define MAX_PRIORITY  5
 #define IDLE_PRIORITY 0
 
 extern void forceProcessChange(uint64_t * rsp);
@@ -35,7 +35,7 @@ uint64_t * scheduler(uint64_t * rsp);
 
 uint8_t getSchedulerStatus();
 
-void stopProcess(uint64_t *stackPointer);
+void stopProcess(uint64_t * stackPointer);
 
 uint64_t * changeProcess(uint64_t * rsp);
 

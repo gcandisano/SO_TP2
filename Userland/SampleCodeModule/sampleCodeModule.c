@@ -1,11 +1,11 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 /* sampleCodeModule.c */
+#include <colors.h>
+#include <pong.h>
+#include <shell.h>
 #include <userio.h>
 #include <usyscalls.h>
-#include <colors.h>
-#include <shell.h>
-#include <pong.h>
 
 int main() {
 	// Choose between terminal or pong
@@ -20,7 +20,7 @@ int main() {
 
 	if (c == 'p') {
 		char * args[2] = {"pong", NULL};
-		int fds[3] = {0, 1, 2}; 
+		int fds[3] = {0, 1, 2};
 		int pid = sys_create_process("pong", args, &pong, 1, fds);
 		sys_wait_pid(pid);
 	}

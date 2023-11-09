@@ -1,41 +1,41 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <colors.h>
-#include <userio.h>
-#include <usyscalls.h>
-#include <colors.h>
-#include <sounds.h>
 #include <boca.h>
+#include <colors.h>
 #include <pong.h>
 #include <shell.h>
+#include <sounds.h>
+#include <userio.h>
+#include <usyscalls.h>
 
 #define COMMANDS_QUANTITY 9
 
-static char * commandsNames[] = {"help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear", "mem", "ps"};
+static char * commandsNames[] = {
+    "help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear", "mem", "ps"};
 
-static char *commands[] = {
-	"\thelp: gives you a list of all existent commands.\n",
-	"\ttime: prints the time of the OS.\n",
-	"\tdate: prints the date of the OS.\n",
-	"\tregisters: print the state of the registers at the time you screenshot them with CTRL key.\n",
-	"\tfillregs: fill the registers with stepped values for testing.\n",
-	"\tdiv0: divide by zero to trigger exception\n",
-	"\tinvalidop: trigger invalid operation code exception\n",
-	"\tpong: go to play the \"pong\" game.\n",
-	"\tclear: clears the OS screen.\n",
-	"\tmem: prints memory status.\n",
-	"\tps: prints processes info.\n",
+static char * commands[] = {
+    "\thelp: gives you a list of all existent commands.\n",
+    "\ttime: prints the time of the OS.\n",
+    "\tdate: prints the date of the OS.\n",
+    "\tregisters: print the state of the registers at the time you screenshot them with CTRL key.\n",
+    "\tfillregs: fill the registers with stepped values for testing.\n",
+    "\tdiv0: divide by zero to trigger exception\n",
+    "\tinvalidop: trigger invalid operation code exception\n",
+    "\tpong: go to play the \"pong\" game.\n",
+    "\tclear: clears the OS screen.\n",
+    "\tmem: prints memory status.\n",
+    "\tps: prints processes info.\n",
 };
 
 void shell() {
-    printColor("Welcome to HomerOS. Type \"help\" for command list\n", ORANGE);
+	printColor("Welcome to HomerOS. Type \"help\" for command list\n", ORANGE);
 	printColor("\nHomerOS: $> ", GREEN);
 
-	int count = 0;	
+	int count = 0;
 	char buffer[1024] = {0};
 	char oldBuffer[1024] = {0};
-	char flag = 0; // Used for up arrow
-	while(1) {
+	char flag = 0;  // Used for up arrow
+	while (1) {
 		unsigned char c = getChar();
 		if (c == '\n') {
 			buffer[count] = 0;
@@ -87,7 +87,6 @@ void shell() {
 	}
 }
 
-
 int commandMatch(char * str1, char * command, int count) {
 	int i = 0;
 	if (count != strlen(command))
@@ -120,7 +119,7 @@ void analizeBuffer(char * buffer, int count) {
 		sys_clear_screen();
 	} else if (commandMatch(buffer, "pong", count)) {
 		char * args[2] = {"pong", NULL};
-		int fds[3] = {0, 1, 2}; 
+		int fds[3] = {0, 1, 2};
 		int pid = sys_create_process("pong", args, &pong, 1, fds);
 		sys_wait_pid(pid);
 		// pong();
@@ -130,17 +129,17 @@ void analizeBuffer(char * buffer, int count) {
 		invalidOpcode();
 	} else if (commandMatch(buffer, "mem", count)) {
 		char * args[2] = {"mem", NULL};
-		int fds[3] = {0, 1, 2}; 
+		int fds[3] = {0, 1, 2};
 		int pid = sys_create_process("mem", args, &memInfo, 1, fds);
 		sys_wait_pid(pid);
 	} else if (commandMatch(buffer, "ps", count)) {
 		char * args[2] = {"ps", NULL};
-		int fds[3] = {0, 1, 2}; 
+		int fds[3] = {0, 1, 2};
 		int pid = sys_create_process("ps", args, &processesInfo, 1, fds);
 		sys_wait_pid(pid);
 	} else if (commandMatch(buffer, "loop", count)) {
 		char * args[2] = {"loop", NULL};
-		int fds[3] = {0, 1, 2}; 
+		int fds[3] = {0, 1, 2};
 		int pid = sys_create_process("loop", args, &infiniteLoop, 1, fds);
 	} else if (commandMatch(buffer, "boca", count)) {
 		sys_clear_screen();
@@ -204,6 +203,6 @@ void processesInfo() {
 }
 
 void infiniteLoop() {
-	while(1)
+	while (1)
 		;
 }

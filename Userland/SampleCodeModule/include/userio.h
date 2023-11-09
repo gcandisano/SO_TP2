@@ -3,13 +3,13 @@
 
 #include <stdint.h>
 
-#define STDIN 0
+#define STDIN  0
 #define STDOUT 1
 #define STDERR 2
 
-void print(char* string);
+void print(char * string);
 
-void printColor(char* string, uint64_t color);
+void printColor(char * string, uint64_t color);
 
 void printChar(char c);
 
@@ -21,13 +21,13 @@ char getCharNoBlock();
 
 void putChar(char c);
 
-unsigned int strlen(char *str);
+unsigned int strlen(char * str);
 
 void printRegs();
 
-void printf(char *format, ...);
+void printf(char * format, ...);
 
-void printfColor(char *format, uint64_t color, ...);
+void printfColor(char * format, uint64_t color, ...);
 
 // int scanf(char *format, ...);
 

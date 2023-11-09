@@ -11,10 +11,10 @@ uint64_t atoi(char * str);
 
 int strtoi(char * buffer, int * i);
 
-void intToStr(int num, char* str);
+void intToStr(int num, char * str);
 
-void intToHex(uint64_t num, char* hex);
+void intToHex(uint64_t num, char * hex);
 
-unsigned int strlen(char* str);
+unsigned int strlen(char * str);
 
-#endif // U_STRINGS_H
+#endif  // U_STRINGS_H
