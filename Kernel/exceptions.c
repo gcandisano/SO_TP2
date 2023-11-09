@@ -5,13 +5,18 @@
 
 #define ZERO_EXCEPTION_ID           0
 #define INVALID_OPCODE_EXCEPTION_ID 6
+#define GENERAL_PROTECTION_FAULT    13
 #define REGS_AMOUNT                 18
 
 extern const uint64_t excepRegs[REGS_AMOUNT];
 
+extern void _hlt();
+
 static void zero_division();
 
 static void invalid_opcode();
+
+static void general_protection();
 
 void printRegisters();
 
@@ -20,6 +25,8 @@ void exceptionDispatcher(int exception) {
 		zero_division();
 	else if (exception == INVALID_OPCODE_EXCEPTION_ID)
 		invalid_opcode();
+	else if (exception == GENERAL_PROTECTION_FAULT)
+		general_protection();
 }
 
 static void zero_division() {
@@ -31,6 +38,14 @@ static void zero_division() {
 static void invalid_opcode() {
 	printStringColor("\n\nInvalid opcode.\n\n", RED);
 	printRegisters();
+}
+
+static void general_protection() {
+	printStringColor("\n\nGeneral protection fault.\n\n", RED);
+	printRegisters();
+	while (1) {
+		_hlt();
+	}
 }
 
 void intToHex(uint64_t num, char * hex) {

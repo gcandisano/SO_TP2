@@ -54,8 +54,8 @@ static int checkLeftAndRightBorder(int x, int i) {
 
 static char shouldDraw(int x, int y, int radius, int i, int j) {
 	return i * i + j * j <= radius * radius &&  // Only draw circle of the square
-	       // !(x+i >= PDFB && x+i <= PDFB + PLAYER_WIDTH) &&
-	       // !(x+i >= width - PDFB - PLAYER_WIDTH && x+i <= width - PDFB ) &&
+	                                            // !(x+i >= PDFB && x+i <= PDFB + PLAYER_WIDTH) &&
+	                                            // !(x+i >= width - PDFB - PLAYER_WIDTH && x+i <= width - PDFB ) &&
 	       x + i != width / 2 && checkTopAndBottomBorder(y, j) && checkLeftAndRightBorder(x, i) &&
 	       !(x + i >= player1.x && x + i <= player1.x + PLAYER_WIDTH - 1 && y + j >= player1.y &&
 	         y + j <= player1.y + PLAYER_HEIGHT) &&
@@ -324,7 +324,7 @@ void pong() {
 			if (c == 0x01) {
 				sys_toggle_cursor();
 				sys_clear_screen();
-				sys_exit(0);
+				return;
 			}
 			// If P pressed, pause
 			if (c == 'p') {
@@ -341,5 +341,5 @@ void pong() {
 		goalMade = 0;
 	}
 	sys_clear_screen();
-	sys_exit(0);
+	return;
 }

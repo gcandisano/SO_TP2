@@ -91,3 +91,7 @@ ProcessInfoPtr * sys_processes_info() {
 	return (ProcessInfoPtr *) sys_call(
 	    (uint64_t) 18, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
 }
+
+uint64_t sys_kill_process(uint64_t pid) {
+	return sys_call((uint64_t) 19, (uint64_t) pid, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
+}

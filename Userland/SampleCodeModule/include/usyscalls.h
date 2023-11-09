@@ -44,4 +44,6 @@ MemoryDataPtr sys_mem_data();
 
 ProcessInfoPtr * sys_processes_info();
 
+uint64_t sys_kill_process(uint64_t pid);
+
 #endif

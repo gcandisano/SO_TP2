@@ -44,6 +44,8 @@ int64_t syscallHandler(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2,
 			return (int64_t) sys_mem_data();
 		case 18:
 			return (int64_t) sys_processes_info();
+		case 19:
+			return (int64_t) sys_kill_process(arg0);
 	}
 	return -1;
 }
@@ -164,4 +166,8 @@ static int64_t sys_mem_data() {
 
 static int64_t sys_processes_info() {
 	return (int64_t) getProcessesInfo();
+}
+
+static int64_t sys_kill_process(uint64_t pid) {
+	return (int64_t) killProcess(pid);
 }

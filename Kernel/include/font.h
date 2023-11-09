@@ -1,6 +1,8 @@
 #ifndef VIDEO_FONT
 #define VIDEO_FONT
 
+#include <stdint.h>
+
 #define FIRST_CHAR 32
 #define LAST_CHAR  126
 

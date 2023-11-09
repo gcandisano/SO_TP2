@@ -19,6 +19,7 @@ typedef struct processInfo {
 	size_t priority;
 	char foreground;
 	int status;
+	int exitCode;
 } processInfo;
 
 typedef processInfo * ProcessInfoPtr;

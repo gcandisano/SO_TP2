@@ -38,6 +38,7 @@ typedef struct PCB {
 	int fd[3];
 	char foreground;
 	int semId;
+	int exitCode;
 
 } PCB;
 
@@ -50,6 +51,7 @@ typedef struct processInfo {
 	size_t priority;
 	char foreground;
 	int status;
+	int exitCode;
 } processInfo;
 
 int createProcess(char * name, int parent, size_t stackSize, char ** args, void * code, char foreground, int * fds);
@@ -69,5 +71,9 @@ processInfo ** getProcessesInfo();
 void freeProcess(PCB * processPcb);
 
 int waitpid(int pid);
+
+void resetProcesses();
+
+void processWrapper(int code(char ** args), char ** args);
 
 #endif
