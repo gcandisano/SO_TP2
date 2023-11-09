@@ -8,6 +8,7 @@
 #include <process.h>
 #include <sound.h>
 #include <stdint.h>
+#include <sync.h>
 #include <syscalls.h>
 #include <time.h>
 #include <videodriver.h>
@@ -53,5 +54,31 @@ static int64_t sys_mem_data();
 static int64_t sys_processes_info();
 
 static int64_t sys_kill_process(uint64_t pid);
+
+static int64_t sys_block_process(uint64_t pid);
+
+static int64_t sys_unblock_process(uint64_t pid);
+
+static int64_t sys_yield();
+
+static int64_t sys_change_priority(uint64_t pid, uint64_t newPriority);
+
+static int64_t sys_malloc(uint64_t size);
+
+static int64_t sys_free(uint64_t ptr);
+
+static int64_t sys_sem_open(uint64_t semName);
+
+static int64_t sys_sem_wait(uint64_t semId);
+
+static int64_t sys_sem_post(uint64_t semId);
+
+static int64_t sys_sem_close(uint64_t semId);
+
+static int64_t sys_sem_create(uint64_t semName, uint64_t initialValue);
+
+static int64_t sys_sem_delete(uint64_t semId);
+
+static int64_t sys_get_pid();
 
 #endif

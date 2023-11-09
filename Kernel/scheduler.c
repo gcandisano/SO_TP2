@@ -15,7 +15,7 @@ los hijos terminen */
 
 uint8_t schedulerStatus = OFF;
 
-uint8_t quantums[6] = {0, 1, 2, 4, 8, 16};
+uint8_t quantums[6] = {0, 16, 8, 4, 2, 1};
 
 QueueADT queues[MAX_PRIORITY + 1];
 
@@ -203,4 +203,9 @@ QueueADT * getQueues() {
 
 struct PCB * getIdleProcess() {
 	return peek(queues[0]);
+}
+
+void yield() {
+	currentProcess->ticks = quantums[currentProcess->priority];
+	forceScheduler();
 }

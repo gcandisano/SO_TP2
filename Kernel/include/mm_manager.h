@@ -25,7 +25,7 @@ void startMemoryManager(const void * start_address, uint64_t size);
 
 void * malloc(uint64_t size);
 
-void free(void * address);
+int free(void * address);
 
 MemoryDataPtr getMemoryData();
 

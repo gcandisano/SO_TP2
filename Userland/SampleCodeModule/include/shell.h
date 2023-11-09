@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <structs.h>
+#include <tests.h>
 #include <uStrings.h>
 
 #define READY   0
@@ -27,5 +28,15 @@ int processesInfo();
 void infiniteLoop();
 
 int killProcess();
+
+int blockProcess(char ** argv);
+
+int unblockProcess(char ** argv);
+
+int changePriority(char ** argv);
+
+void yield();
+
+void parseCommand(char ** argv, char * buffer, int maxArgs);
 
 #endif

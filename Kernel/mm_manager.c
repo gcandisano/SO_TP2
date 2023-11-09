@@ -10,7 +10,7 @@ void * list_address;
 
 void startMemoryManager(const void * start_address, uint64_t size) {
 	list_address = (void *) start_address;
-	memory_list.address = (void *) start_address + 0x100000;
+	memory_list.address = (void *) start_address + 0x400000;
 	memory_list.size = size;
 	memory_list.is_free = true;
 	memory_list.prev = NULL;
@@ -22,7 +22,7 @@ void startMemoryManager(const void * start_address, uint64_t size) {
 }
 
 void * malloc(uint64_t size) {
-	if (size <= 0) {
+	if (size <= 0 || list_address >= (void *) 0xA00000) {
 		return NULL;
 	}
 	NodePtr current = &memory_list;
@@ -52,18 +52,18 @@ void * malloc(uint64_t size) {
 	return current->address;
 }
 
-void free(void * address) {
+int free(void * address) {
 	NodePtr current = &memory_list;
 	while (current != NULL && current->address != address) {
 		current = current->next;
 	}
 
 	if (current == NULL) {
-		return;  // Address not found
+		return 1;  // Address not found
 	}
 
 	if (current->is_free) {
-		return;  // Address already free
+		return 2;  // Address already free
 	}
 
 	current->is_free = true;
@@ -83,6 +83,7 @@ void free(void * address) {
 		current->next = current->next->next;
 		current->next->prev = current;
 	}
+	return 0;
 }
 
 MemoryDataPtr getMemoryData() {

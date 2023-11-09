@@ -67,4 +67,6 @@ struct PCB * getIdleProcess();
 
 int getForegroundProcess();
 
+void yield();
+
 #endif

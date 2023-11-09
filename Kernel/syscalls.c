@@ -46,6 +46,32 @@ int64_t syscallHandler(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2,
 			return (int64_t) sys_processes_info();
 		case 19:
 			return (int64_t) sys_kill_process(arg0);
+		case 20:
+			return (int64_t) sys_block_process(arg0);
+		case 21:
+			return (int64_t) sys_unblock_process(arg0);
+		case 22:
+			return (int64_t) sys_yield();
+		case 23:
+			return (int64_t) sys_change_priority(arg0, arg1);
+		case 24:
+			return (int64_t) sys_malloc(arg0);
+		case 25:
+			return (int64_t) sys_free(arg0);
+		case 26:
+			return (int64_t) sys_sem_open(arg0);
+		case 27:
+			return (int64_t) sys_sem_wait(arg0);
+		case 28:
+			return (int64_t) sys_sem_post(arg0);
+		case 29:
+			return (int64_t) sys_sem_close(arg0);
+		case 30:
+			return (int64_t) sys_sem_create(arg0, arg1);
+		case 31:
+			return (int64_t) sys_sem_delete(arg0);
+		case 32:
+			return (int64_t) sys_get_pid();
 	}
 	return -1;
 }
@@ -170,4 +196,58 @@ static int64_t sys_processes_info() {
 
 static int64_t sys_kill_process(uint64_t pid) {
 	return (int64_t) killProcess(pid);
+}
+
+static int64_t sys_block_process(uint64_t pid) {
+	return (int64_t) blockProcess(pid);
+}
+
+static int64_t sys_unblock_process(uint64_t pid) {
+	return (int64_t) unblockProcess(pid);
+}
+
+static int64_t sys_yield() {
+	yield();
+	return 0;
+}
+
+static int64_t sys_change_priority(uint64_t pid, uint64_t newPriority) {
+	return (int64_t) changePriority(pid, newPriority);
+}
+
+static int64_t sys_malloc(uint64_t size) {
+	return (int64_t) malloc((int) size);
+}
+
+static int64_t sys_free(uint64_t ptr) {
+	free((void *) ptr);
+	return 0;
+}
+
+static int64_t sys_sem_open(uint64_t semName) {
+	return (int64_t) semOpen((char *) semName);
+}
+
+static int64_t sys_sem_wait(uint64_t semId) {
+	return (int64_t) semWait((int) semId);
+}
+
+static int64_t sys_sem_post(uint64_t semId) {
+	return (int64_t) semPost((int) semId);
+}
+
+static int64_t sys_sem_close(uint64_t semId) {
+	return (int64_t) semClose((int) semId);
+}
+
+static int64_t sys_sem_create(uint64_t semName, uint64_t initialValue) {
+	return (int64_t) semCreate((char *) semName, (int) initialValue);
+}
+
+static int64_t sys_sem_delete(uint64_t semId) {
+	return (int64_t) semDestroy((int) semId);
+}
+
+static int64_t sys_get_pid() {
+	return (int64_t) getCurrentPID();
 }

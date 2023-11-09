@@ -46,4 +46,30 @@ ProcessInfoPtr * sys_processes_info();
 
 uint64_t sys_kill_process(uint64_t pid);
 
+int64_t sys_block_process(uint64_t pid);
+
+int64_t sys_unblock_process(uint64_t pid);
+
+int64_t sys_yield();
+
+int64_t sys_change_priority(uint64_t pid, uint64_t newPriority);
+
+void * sys_malloc(uint64_t size);
+
+int64_t sys_free(void * ptr);
+
+int64_t sys_sem_open(char * semName);
+
+int64_t sys_sem_wait(int semId);
+
+int64_t sys_sem_post(int semId);
+
+int64_t sys_sem_close(int semId);
+
+int sys_sem_create(char * semName, int initialValue);
+
+int64_t sys_sem_delete(int semId);
+
+int64_t sys_get_pid();
+
 #endif

@@ -76,7 +76,6 @@ int killProcess(int pid) {
 		cantProcesses--;
 	} else {
 		pcb->status = ZOMBIE;
-		pcb->exitCode = 9;
 		semPost(pcb->semId);
 		semClose(pcb->semId);
 	}

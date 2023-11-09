@@ -10,8 +10,23 @@
 
 #define COMMANDS_QUANTITY (sizeof(commandsNames) / sizeof(char *))
 
-static char * commandsNames[] = {
-    "help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear", "mem", "ps", "kill"};
+static char * commandsNames[] = {"help",
+                                 "time",
+                                 "date",
+                                 "registers",
+                                 "fillregs",
+                                 "div0",
+                                 "invalidop",
+                                 "pong",
+                                 "clear",
+                                 "mem",
+                                 "ps",
+                                 "kill",
+                                 "block",
+                                 "unblock",
+                                 "yield",
+                                 "nice",
+                                 "loop"};
 
 static char * commands[] = {
     "\thelp: gives you a list of all existent commands.\n",
@@ -26,9 +41,15 @@ static char * commands[] = {
     "\tmem: prints memory status.\n",
     "\tps: prints processes info.\n",
     "\tkill: kill processes by pid.\n",
+    "\tblock: block processes by pid.\n",
+    "\tunblock: unblock processes by pid.\n",
+    "\tyield: yield the current process.\n",
+    "\tnice: change the priority of a process.\n",
+    "\tloop: create a process that loops forever.\n",
 };
 
 char * loopArgs[2] = {"loop", NULL};
+char * testmmArgs[3];
 
 int fds[3] = {0, 1, 2};
 
@@ -142,11 +163,34 @@ void analizeBuffer(char * buffer, int count) {
 		int pid = sys_create_process("ps", args, &processesInfo, 1, fds);
 		sys_wait_pid(pid);
 	} else if (commandMatch(buffer, "kill", count)) {
-		char * args[3] = {"kill", &(buffer[5]), NULL};
+		char * args[3];
+		parseCommand(args, buffer, 3);
 		int pid = sys_create_process("kill", args, &killProcess, 1, fds);
 		sys_wait_pid(pid);
+	} else if (commandMatch(buffer, "block", count)) {
+		char * args[3];
+		parseCommand(args, buffer, 3);
+		int pid = sys_create_process("block", args, &blockProcess, 1, fds);
+		sys_wait_pid(pid);
+	} else if (commandMatch(buffer, "unblock", count)) {
+		char * args[3];
+		parseCommand(args, buffer, 3);
+		int pid = sys_create_process("unblock", args, &unblockProcess, 1, fds);
+		sys_wait_pid(pid);
+	} else if (commandMatch(buffer, "yield", count)) {
+		char * args[3] = {"yield", NULL};
+		int pid = sys_create_process("yield", args, &yield, 1, fds);
+		sys_wait_pid(pid);
+	} else if (commandMatch(buffer, "nice", count)) {
+		char * args[4];
+		parseCommand(args, buffer, 4);
+		int pid = sys_create_process("nice", args, &changePriority, 1, fds);
+		sys_wait_pid(pid);
 	} else if (commandMatch(buffer, "loop", count)) {
-		sys_create_process("loop", loopArgs, &infiniteLoop, 1, fds);
+		sys_create_process("loop", loopArgs, &infiniteLoop, 0, fds);
+	} else if (commandMatch(buffer, "testmm", count)) {
+		parseCommand(testmmArgs, buffer, 3);
+		sys_create_process("testmm", testmmArgs, &test_mm, 0, fds);
 	} else if (commandMatch(buffer, "boca", count)) {
 		sys_clear_screen();
 		sys_draw_image(diego, 100, 100);
@@ -218,12 +262,91 @@ int killProcess(char ** argv) {
 		printfColor("\n\nNo process id specified\n", RED);
 		return 1;
 	}
-	int zero = 0;
-	int pid = strtoi(argv[1], &zero);
+	int pid = atoi(argv[1]);
 	int response = sys_kill_process(pid);
 	if (response != 0) {
 		printfColor("\n\nProcess %d not found\n", RED, pid);
 		return 1;
 	}
+	printfColor("\n\nProcess %d killed\n", RED, pid);
 	return 0;
+}
+
+int blockProcess(char ** argv) {
+	if (argv[1] == 0) {
+		printfColor("\n\nNo process id specified\n", RED);
+		return 1;
+	}
+	int pid = atoi(argv[1]);
+	int result = sys_block_process(pid);
+	if (result != 0) {
+		printfColor("\n\nProcess %d not found\n", RED, pid);
+		return 1;
+	}
+	printfColor("\n\nProcess %d blocked\n", YELLOW, pid);
+	return 0;
+}
+
+int unblockProcess(char ** argv) {
+	if (argv[1] == 0) {
+		printfColor("\n\nNo process id specified\n", RED);
+		return 1;
+	}
+	int pid = atoi(argv[1]);
+	int result = sys_unblock_process(pid);
+	if (result != 0) {
+		printfColor("\n\nProcess %d not found\n", RED, pid);
+		return 1;
+	}
+	printfColor("\n\nProcess %d unblocked\n", CYAN, pid);
+	return 0;
+}
+
+int changePriority(char ** argv) {
+	if (argv[1] == 0) {
+		printfColor("\n\nNo process id specified\n", RED);
+		return 1;
+	}
+	if (argv[2] == 0) {
+		printfColor("\n\nNo priority specified\n", RED);
+		return 1;
+	}
+	int pid = atoi(argv[1]);
+	int newPriority = atoi(argv[2]);
+	if (newPriority < 0 || newPriority > 5) {
+		printfColor("\n\nInvalid priority\n", RED);
+		return 1;
+	}
+	int result = sys_change_priority(pid, newPriority);
+	if (result != 0) {
+		printfColor("\n\nProcess %s not found\n", RED, pid);
+		return 1;
+	}
+	printfColor("\n\nProcess %d priority changed to %d\n", YELLOW, pid, newPriority);
+	return 0;
+}
+
+void yield() {
+	sys_yield();
+}
+
+void parseCommand(char ** argv, char * buffer, int maxArgs) {
+	int i = 0;
+	int j = 0;
+	while (buffer[i] != 0 && j < maxArgs) {
+		while (buffer[i] == ' ') {
+			i++;
+		}
+		if (buffer[i] == 0) {
+			break;
+		}
+		argv[j] = &(buffer[i]);
+		j++;
+		while (buffer[i] != ' ' && buffer[i] != 0) {
+			i++;
+		}
+		buffer[i] = 0;
+		i++;
+	}
+	argv[j] = NULL;
 }
