@@ -1,9 +1,32 @@
+#ifndef MM_MANAGER_H
+#define MM_MANAGER_H
+
+#include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 
-typedef uint64_t * ptr_t;
+struct node {
+	void * address;
+	uint64_t size;
+	bool is_free;
+	struct node * prev;
+	struct node * next;
+};
 
-void init_memory_manager(uint64_t start_address, uint64_t size);
+typedef struct node * NodePtr;
 
-ptr_t malloc(uint64_t size);
+typedef struct memoryData {
+	uint32_t free, used, total;
+} memoryData;
 
-void free(ptr_t address);
+typedef memoryData * MemoryDataPtr;
+
+void startMemoryManager(const void * start_address, uint64_t size);
+
+void * malloc(uint64_t size);
+
+void free(void * address);
+
+MemoryDataPtr getMemoryData();
+
+#endif

@@ -17,19 +17,24 @@ GLOBAL _int80Handler
 GLOBAL _exception0Handler
 GLOBAL _exception6Handler
 
+GLOBAL createStack
+GLOBAL forceScheduler
+GLOBAL forceProcessChange
+
 GLOBAL registers
 GLOBAL excepRegs
 
-GLOBAL save_original_regs
+GLOBAL saveOriginalRegs
 
 EXTERN irqDispatcher
 EXTERN exceptionDispatcher
 EXTERN syscallHandler
 
+EXTERN scheduler
+
 SECTION .text
 
-%macro pushState 0
-	push rax
+%macro pushStateNoRax 0
 	push rbx
 	push rcx
 	push rdx
@@ -46,7 +51,7 @@ SECTION .text
 	push r15
 %endmacro
 
-%macro popState 0
+%macro popStateNoRax 0
 	pop r15
 	pop r14
 	pop r13
@@ -61,8 +66,18 @@ SECTION .text
 	pop rdx
 	pop rcx
 	pop rbx
+%endmacro
+
+%macro pushState 0
+	push rax
+	pushStateNoRax
+%endmacro
+
+%macro popState 0
+	popStateNoRax
 	pop rax
 %endmacro
+
 
 %macro irqHandlerMaster 1
 	pushState
@@ -194,7 +209,7 @@ saveRegisters:
 	iretq 	; SS, RSP, RFLAGS, CS, RIP
 
 
-save_original_regs:
+saveOriginalRegs:
 	; Saving registers: RBX, RBP, R12, R13, R15, RSP, RIP
 	mov [ogRegs+8*1], rbx
 	mov [ogRegs+8*2], rbp
@@ -209,7 +224,29 @@ save_original_regs:
 
 ;8254 Timer (Timer Tick)
 _irq00Handler:
-	irqHandlerMaster 0
+	cli
+	pushState
+
+	mov rdi, rsp ; Send RSP and SS as arguments for the switch
+	call scheduler
+	
+	cmp rax, 0
+	je .continue
+
+	mov rsp, rax ; Change stack pointer to new process
+
+	.continue:
+
+	mov rdi, 0 ; pasaje de parametro
+	call irqDispatcher
+
+	; signal pic EOI (End of Interrupt)
+	mov al, 20h
+	out 20h, al
+
+	popState
+	sti
+	iretq
 
 ;Keyboard
 _irq01Handler:
@@ -247,9 +284,9 @@ _irq05Handler:
 
 ;Syscalls
 _int80Handler:
-	pushState
+	pushStateNoRax
 	call syscallHandler
-	popState
+	popStateNoRax
 	iretq
 
 
@@ -261,11 +298,49 @@ _exception0Handler:
 _exception6Handler:
 	exceptionHandler 6
 
+createStack: ; RDI STACK - RSI CODE - RDX ARGS 
+	mov r8, rsp ; preservo viejo RSP
+	mov rsp, rdi
+	push 0x0 ; el SS
+	push rdi ; el RSP
+	push 0x202 ; el RFLAGS
+	push 0x8 ; el CS
+
+	push rsi ; el RIP ahora es el wrapper.
+
+	push 0x0 ; el RAX
+	push 0x1 ; rbx
+    push 0x2 ; rcx
+    push 0x3 ; rdx
+    push 0x4 ; rbp
+    push rsi ; rdi
+    push rdx ; rsi
+    push 0x8 ; r8
+    push 0x9 ; r9
+    push 0x10 ; r10
+    push 0x11 ; r11
+    push 0x12 ; r12
+    push 0x13 ; r13
+    push 0x14 ; r14
+    push 0x15 ; r15
+	mov rax,rsp ; el RSP
+	mov rsp,r8 ; restauro el RSP
+	ret
+
+forceProcessChange:
+	mov rsp, rdi
+	popState
+	iretq
+
 haltcpu:
 	cli
 	hlt
 	ret
 
+
+forceScheduler:
+	int 20h 
+	ret
 
 
 SECTION .bss

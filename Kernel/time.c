@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <time.h>
 
 extern void _hlt();
@@ -16,9 +18,9 @@ int seconds_elapsed() {
 	return ticks / 18;
 }
 
-void timer_wait(int delta) { 
+void timer_wait(int delta) {
 	int initialTicks = ticks;
-	while(ticks - initialTicks < delta) {
+	while (ticks - initialTicks < delta) {
 		_hlt();
 	}
 }

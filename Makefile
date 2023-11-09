@@ -1,5 +1,5 @@
 
-all:  bootloader kernel userland image
+all:  bootloader kernel userland image installPreCommit
 
 bootloader:
 	cd Bootloader; make all
@@ -18,5 +18,8 @@ clean:
 	cd Image; make clean
 	cd Kernel; make clean
 	cd Userland; make clean
+
+installPreCommit: .pre-commit
+	cp .pre-commit .git/hooks/pre-commit
 
 .PHONY: bootloader image collections kernel userland all clean

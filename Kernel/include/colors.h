@@ -2,7 +2,7 @@
 #define COLORS_H
 
 typedef struct Color {
-    char r, g, b;
+	char r, g, b;
 } Color;
 
 static Color RED = {0xFF, 0, 0};

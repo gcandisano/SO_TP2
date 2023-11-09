@@ -9,5 +9,6 @@ docker exec -it so_tp2 make clean -C/root/Toolchain
 docker exec -it so_tp2 make clean -C/root/
 docker exec -it so_tp2 make -C/root/Toolchain
 docker exec -it so_tp2 env GCC_COLORS="error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01" make -C/root/
+docker exec -it so_tp2 chmod -R g+wx /root/
 # docker stop so_tp2
 bash run.sh
