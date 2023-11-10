@@ -10,7 +10,7 @@ void * list_address;
 
 void startMemoryManager(const void * start_address, uint64_t size) {
 	list_address = (void *) start_address;
-	memory_list.address = (void *) start_address + 0x400000;
+	memory_list.address = (void *) start_address + (128 * 1024 * 1024);
 	memory_list.size = size;
 	memory_list.is_free = true;
 	memory_list.prev = NULL;
@@ -22,7 +22,11 @@ void startMemoryManager(const void * start_address, uint64_t size) {
 }
 
 void * malloc(uint64_t size) {
-	if (size <= 0 || list_address >= (void *) 0xA00000) {
+	if (size <= 0) {
+		return NULL;
+	}
+	if (list_address >= (void *) 0x600000 + (128 * 1024 * 1024)) {
+		printString("No More memory\n");
 		return NULL;
 	}
 	NodePtr current = &memory_list;

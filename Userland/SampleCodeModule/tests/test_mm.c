@@ -34,8 +34,9 @@ uint64_t test_mm(char * argv[]) {
 		while (rq < MAX_BLOCKS && total < max_memory) {
 			mm_rqs[rq].size = GetUniform(max_memory - total - 1) + 1;
 			mm_rqs[rq].address = sys_malloc(mm_rqs[rq].size);
-			if (mm_rqs[rq].address == NULL)
+			if (mm_rqs[rq].address == NULL) {
 				return 1;
+			}
 
 			if (mm_rqs[rq].address) {
 				total += mm_rqs[rq].size;
@@ -46,20 +47,23 @@ uint64_t test_mm(char * argv[]) {
 		// Set
 		uint32_t i;
 		for (i = 0; i < rq; i++)
-			if (mm_rqs[i].address)
+			if (mm_rqs[i].address) {
 				memset2(mm_rqs[i].address, i, mm_rqs[i].size);
+			}
 
 		// Check
 		for (i = 0; i < rq; i++)
-			if (mm_rqs[i].address)
+			if (mm_rqs[i].address) {
 				if (!memcheck(mm_rqs[i].address, i, mm_rqs[i].size)) {
 					printf("test_mm ERROR\n");
 					return -1;
 				}
+			}
 
 		// Free
 		for (i = 0; i < rq; i++)
-			if (mm_rqs[i].address)
+			if (mm_rqs[i].address) {
 				sys_free(mm_rqs[i].address);
+			}
 	}
 }

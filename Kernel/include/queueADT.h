@@ -21,6 +21,8 @@ void * findElement(QueueADT queue, uint8_t (*condition)(void *));
 
 void ** findElements(QueueADT queue, uint8_t (*condition)(void *, int), int pid);
 
+void ** getAllElements(QueueADT queue);
+
 void deleteQueue(QueueADT queue);
 
 #endif

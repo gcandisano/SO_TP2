@@ -4,7 +4,6 @@
 #include <sync.h>
 
 int biggerPid = 1;
-PCB * processes[MAX_PROCESSES];
 size_t cantProcesses = 0;
 
 int createProcess(char * name, int parent, size_t stackSize, char ** args, void * code, char foreground, int * fds) {
@@ -12,11 +11,11 @@ int createProcess(char * name, int parent, size_t stackSize, char ** args, void 
 		return -1;
 	PCB * pcb = (PCB *) malloc(sizeof(PCB));
 	if (pcb == NULL)
-		return -1;
+		return -2;
 	pcb->name = (char *) malloc(strlen(name) + 1);
 	if (pcb->name == NULL) {
 		free(pcb);
-		return -1;
+		return -3;
 	}
 	pcb->pid = biggerPid++;
 	strcpy(pcb->name, name);
@@ -29,14 +28,14 @@ int createProcess(char * name, int parent, size_t stackSize, char ** args, void 
 	if (pcb->stack == NULL) {
 		free(pcb->name);
 		free(pcb);
-		return -1;
+		return -4;
 	}
 	pcb->stack->base = (uint64_t *) malloc(stackSize);
 	if (pcb->stack->base == NULL) {
 		free(pcb->stack);
 		free(pcb->name);
 		free(pcb);
-		return -1;
+		return -5;
 	}
 	pcb->stack->size = stackSize;
 	pcb->stack->current = pcb->stack->base + pcb->stack->size - 1;
@@ -50,8 +49,7 @@ int createProcess(char * name, int parent, size_t stackSize, char ** args, void 
 	pcb->semId = semCreateAnon(0);
 	pcb->exitCode = 0;
 
-	processes[cantProcesses++] = pcb;
-	// TODO: Ver que se agregue bien
+	cantProcesses++;
 
 	addProcess(pcb);
 	return pcb->pid;
@@ -72,7 +70,6 @@ int killProcess(int pid) {
 		pcb->status = DEAD;
 		removeProcess(pcb);
 		freeProcess(pcb);
-		// TODO: Sacarlo del array de procesos
 		cantProcesses--;
 	} else {
 		pcb->status = ZOMBIE;
@@ -157,19 +154,16 @@ processInfo ** getProcessesInfo() {
 	if (info == NULL)
 		return NULL;
 
-	for (int i = 0; i < cantProcesses; i++) {
-		info[i] = getProcessInfo(processes[i]);
-		if (info[i] == NULL) {
-			for (int j = 0; j < i; j++) {
-				free(info[j]->name);
-				free(info[j]);
-			}
-			free(info);
-			return NULL;
+	int i = 0;
+	QueueADT * myQueues = getQueues();
+	for (int j = 0; j <= MAX_PRIORITY; j++) {
+		PCB ** processes = (PCB **) getAllElements(myQueues[j]);
+		for (int k = 0; processes[k] != NULL; k++) {
+			info[i++] = getProcessInfo(processes[k]);
 		}
+		free(processes);
 	}
-
-	info[cantProcesses] = NULL;
+	info[i] = NULL;
 	return info;
 }
 

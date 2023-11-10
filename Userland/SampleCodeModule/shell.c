@@ -50,8 +50,10 @@ static char * commands[] = {
 
 char * loopArgs[2] = {"loop", NULL};
 char * testmmArgs[3];
+char * testProArgs[3];
+char * testSyncArgs[4];
 
-int fds[3] = {0, 1, 2};
+int fds[3] = {0, 1, 0};
 
 void shell() {
 	printColor("Welcome to HomerOS. Type \"help\" for command list\n", ORANGE);
@@ -190,7 +192,15 @@ void analizeBuffer(char * buffer, int count) {
 		sys_create_process("loop", loopArgs, &infiniteLoop, 0, fds);
 	} else if (commandMatch(buffer, "testmm", count)) {
 		parseCommand(testmmArgs, buffer, 3);
-		sys_create_process("testmm", testmmArgs, &test_mm, 0, fds);
+		sys_create_process("testmm", testmmArgs, &test_mm, 1, fds);
+	} else if (commandMatch(buffer, "testpro", count)) {
+		parseCommand(testProArgs, buffer, 3);
+		sys_create_process("testpro", testProArgs, &test_processes, 1, fds);
+	} else if (commandMatch(buffer, "testprio", count)) {
+		sys_create_process("testprio", NULL, &test_prio, 0, fds);
+	} else if (commandMatch(buffer, "testsync", count)) {
+		parseCommand(testSyncArgs, buffer, 3);
+		sys_create_process("testsync", testSyncArgs, &test_sync, 0, fds);
 	} else if (commandMatch(buffer, "boca", count)) {
 		sys_clear_screen();
 		sys_draw_image(diego, 100, 100);

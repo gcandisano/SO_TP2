@@ -9,9 +9,9 @@
 #define SEM_ID               "sem"
 #define TOTAL_PAIR_PROCESSES 2
 
-int64_t global;  // shared memory
+int32_t global;  // shared memory
 
-void slowInc(int64_t * p, int64_t inc) {
+void slowInc(int32_t * p, int64_t inc) {
 	uint64_t aux = *p;
 	sys_yield();  // This makes the race condition highly probable
 	aux += inc;
@@ -29,7 +29,7 @@ uint64_t my_process_inc(char * argv[]) {
 
 	if ((n = satoi(argv[0])) <= 0)
 		return -1;
-	if ((inc = satoi(argv[1])) == 0)
+	if ((inc = satoi(argv[0])) == 0)
 		return -1;
 	if ((use_sem = satoi(argv[2])) < 0)
 		return -1;
@@ -63,11 +63,11 @@ uint64_t my_process_inc(char * argv[]) {
 uint64_t test_sync(char * argv[]) {  //{n, use_sem, 0}
 	uint64_t pids[2 * TOTAL_PAIR_PROCESSES];
 
-	if (argv[0] == 0 || argv[1] == 0)
+	if (argv[1] == 0 || argv[2] == 0)
 		return -1;
 
-	char * argvDec[] = {argv[0], "-1", argv[1], NULL};
-	char * argvInc[] = {argv[0], "1", argv[1], NULL};
+	char * argvDec[] = {argv[1], "-1", argv[0], NULL};
+	char * argvInc[] = {argv[1], "1", argv[0], NULL};
 	int fds[3] = {0, 1, 0};
 
 	global = 0;

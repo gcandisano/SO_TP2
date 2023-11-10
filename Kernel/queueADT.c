@@ -121,6 +121,27 @@ void ** findElements(QueueADT queue, uint8_t (*condition)(void *, int), int pid)
 	return elements;
 }
 
+void ** getAllElements(QueueADT queue) {
+	int countElements = 0;
+	Node * current = queue->first;
+	while (current != NULL) {
+		countElements++;
+		current = current->next;
+	}
+	void ** elements = malloc(sizeof(void *) * (countElements + 1));
+	if (elements == NULL) {
+		return NULL;
+	}
+	int dim = 0;
+	current = queue->first;
+	while (current != NULL) {
+		elements[dim++] = current->data;
+		current = current->next;
+	}
+	elements[dim] = NULL;
+	return elements;
+}
+
 void deleteQueue(QueueADT queue) {
 	Node * current = queue->first;
 	Node * next;
