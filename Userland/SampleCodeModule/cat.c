@@ -15,18 +15,18 @@ int cat(char ** args) {
 				i--;
 			}
 		} else if (c == '\n') {
-			printf("\n");
-			while (j != i) {
-				printf("%c", buff[j]);
+			printChar('\n');
+			while (j < i) {
+				printChar(buff[j]);
 				j++;
 			}
 			i = 0;
 			j = 0;
-			printf("\n");
-		} else {
+			printChar('\n');
+		} else if (c > 20 && c < 127) {
 			if (i != SIZE) {
 				buff[i] = c;
-				printf("%c", buff[i]);
+				printChar(buff[i]);
 				i++;
 			}
 		}

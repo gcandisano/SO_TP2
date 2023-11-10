@@ -11,9 +11,9 @@
 	10000000  // TODO: Change this value to make the wait long enough to see theese processes beeing run at least twice
 
 #define TOTAL_PROCESSES 3
-#define LOWEST          0  // TODO: Change as required
-#define MEDIUM          1  // TODO: Change as required
-#define HIGHEST         2  // TODO: Change as required
+#define LOWEST          1  // TODO: Change as required
+#define MEDIUM          3  // TODO: Change as required
+#define HIGHEST         5  // TODO: Change as required
 
 int64_t prio[TOTAL_PROCESSES] = {LOWEST, MEDIUM, HIGHEST};
 
@@ -29,28 +29,46 @@ void test_prio() {
 	bussy_wait(WAIT);
 	printf("\nCHANGING PRIORITIES...\n");
 
-	for (i = 0; i < TOTAL_PROCESSES; i++)
-		sys_change_priority(pids[i], prio[i]);
+	for (i = 0; i < TOTAL_PROCESSES; i++) {
+		int r = sys_change_priority(pids[i], prio[i]);
+		if (r != 0)
+			printf("test_prio: ERROR: sys_change_priority");
+	}
 
 	bussy_wait(WAIT);
 	printf("\nBLOCKING...\n");
 
-	for (i = 0; i < TOTAL_PROCESSES; i++)
-		sys_block_process(pids[i]);
+	for (i = 0; i < TOTAL_PROCESSES; i++) {
+		int r = sys_block_process(pids[i]);
+		if (r != 0)
+			printf("test_prio: ERROR: sys_block_process");
+	}
 
 	printf("CHANGING PRIORITIES WHILE BLOCKED...\n");
 
-	for (i = 0; i < TOTAL_PROCESSES; i++)
-		sys_change_priority(pids[i], MEDIUM);
+	for (i = 0; i < TOTAL_PROCESSES; i++) {
+		int r = sys_change_priority(pids[i], MEDIUM);
+		if (r != 0)
+			printf("test_prio: ERROR: sys_change_priority");
+	}
 
 	printf("UNBLOCKING...\n");
 
-	for (i = 0; i < TOTAL_PROCESSES; i++)
-		sys_unblock_process(pids[i]);
+	for (i = 0; i < TOTAL_PROCESSES; i++) {
+		int r = sys_unblock_process(pids[i]);
+		if (r != 0)
+			printf("test_prio: ERROR: sys_unblock_process");
+	}
 
 	bussy_wait(WAIT);
 	printf("\nKILLING...\n");
 
-	for (i = 0; i < TOTAL_PROCESSES; i++)
-		sys_kill_process(pids[i]);
+	for (i = 0; i < TOTAL_PROCESSES; i++) {
+		int r1 = sys_kill_process(pids[i]);
+		int r2 = sys_kill_process(pids[i]);
+		if (r1 != 0 || r2 != 0)
+			printf("test_prio: ERROR: sys_kill_process");
+	}
+
+	sys_exit(0);
 }

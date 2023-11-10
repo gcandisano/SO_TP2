@@ -202,12 +202,7 @@ saveRegisters:
 	mov rax, [rsp + 14*8]	; RAX
 	mov[registers], rax
 
-	; signal pic EOI (End of Interrupt)
-	mov al, 20h
-	out 20h, al
-
-	popState
-	iretq 	; SS, RSP, RFLAGS, CS, RIP
+	jmp continueKeyboard
 
 
 saveOriginalRegs:
@@ -257,6 +252,7 @@ _irq01Handler:
 	cmp al, 0x1D; Left Control key
 	je saveRegisters
 
+	continueKeyboard:
 	mov rdi, 1 ; pasaje de parametro
 	call irqDispatcher
 

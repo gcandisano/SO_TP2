@@ -29,7 +29,7 @@ uint64_t my_process_inc(char * argv[]) {
 
 	if ((n = satoi(argv[0])) <= 0)
 		return -1;
-	if ((inc = satoi(argv[0])) == 0)
+	if ((inc = satoi(argv[1])) == 0)
 		return -1;
 	if ((use_sem = satoi(argv[2])) < 0)
 		return -1;
@@ -66,8 +66,8 @@ uint64_t test_sync(char * argv[]) {  //{n, use_sem, 0}
 	if (argv[1] == 0 || argv[2] == 0)
 		return -1;
 
-	char * argvDec[] = {argv[1], "-1", argv[0], NULL};
-	char * argvInc[] = {argv[1], "1", argv[0], NULL};
+	char * argvDec[] = {argv[1], "-1", argv[2], NULL};
+	char * argvInc[] = {argv[1], "1", argv[2], NULL};
 	int fds[3] = {0, 1, 0};
 
 	global = 0;

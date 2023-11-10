@@ -2,33 +2,18 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <boca.h>
 #include <colors.h>
+#include <commands.h>
 #include <pong.h>
 #include <shell.h>
 #include <sounds.h>
 #include <userio.h>
 #include <usyscalls.h>
-#include <commands.h>
 
 #define COMMANDS_QUANTITY (sizeof(commandsNames) / sizeof(char *))
 
-static char * commandsNames[] = {"help",
-                                 "time",
-                                 "date",
-                                 "registers",
-                                 "fillregs",
-                                 "div0",
-                                 "invalidop",
-                                 "pong",
-                                 "clear",
-                                 "mem",
-                                 "ps",
-                                 "kill",
-                                 "block",
-                                 "unblock",
-                                 "yield",
-                                 "nice",
-                                 "loop",
-								 "cat"};
+static char * commandsNames[] = {"help",  "time", "date",   "registers", "fillregs", "div0",    "invalidop", "pong",
+                                 "clear", "mem",  "ps",     "kill",      "block",    "unblock", "yield",     "nice",
+                                 "loop",  "cat",  "testmm", "testpro",   "testprio", "testsync"};
 
 static char * commands[] = {
     "\thelp: gives you a list of all existent commands.\n",
@@ -48,8 +33,11 @@ static char * commands[] = {
     "\tyield: yield the current process.\n",
     "\tnice: change the priority of a process.\n",
     "\tloop: create a process that loops forever.\n",
-	"\tcat: prints what you type.\n"
-};
+    "\tcat: prints what you type.\n",
+    "\ttestmm: test memory manager.\n",
+    "\ttestpro: test processes.\n",
+    "\ttestprio: test priority.\n",
+    "\ttestsync: test sync.\n"};
 
 char * loopArgs[2] = {"loop", NULL};
 char * testmmArgs[3];
@@ -198,12 +186,15 @@ void analizeBuffer(char * buffer, int count) {
 		sys_create_process("testmm", testmmArgs, &test_mm, 1, fds);
 	} else if (commandMatch(buffer, "testpro", count)) {
 		parseCommand(testProArgs, buffer, 3);
-		sys_create_process("testpro", testProArgs, &test_processes, 1, fds);
+		sys_create_process("testpro", testProArgs, &test_processes, 0, fds);
 	} else if (commandMatch(buffer, "testprio", count)) {
-		sys_create_process("testprio", NULL, &test_prio, 0, fds);
+		int pid = sys_create_process("testprio", NULL, &test_prio, 1, fds);
+		sys_wait_pid(pid);
 	} else if (commandMatch(buffer, "testsync", count)) {
+		printChar('\n');
 		parseCommand(testSyncArgs, buffer, 3);
-		sys_create_process("testsync", testSyncArgs, &test_sync, 0, fds);
+		int pid = sys_create_process("testsync", testSyncArgs, &test_sync, 0, fds);
+		sys_wait_pid(pid);
 	} else if (commandMatch(buffer, "boca", count)) {
 		sys_clear_screen();
 		sys_draw_image(diego, 100, 100);
@@ -213,8 +204,7 @@ void analizeBuffer(char * buffer, int count) {
 		char * args[2] = {"cat", NULL};
 		int pid = sys_create_process("cat", args, &cat, 0, fds);
 		sys_wait_pid(pid);
-	} else
-	{
+	} else {
 		printColor("\nCommand not found. Type \"help\" for command list\n", RED);
 	}
 }

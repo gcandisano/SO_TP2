@@ -39,7 +39,8 @@ char isLetter(unsigned char key) {
 
 void keyboard_handler() {
 	unsigned char key = getKey();
-	if (key < 83 || key == RELEASE_SHIFT || key == CAPS_LOCK) {  // 83 elems in the charHexMap
+	if (key < 83 || key == RELEASE_SHIFT || key == CAPS_LOCK ||
+	    key == RELEASE_LEFT_CTRL) {  // 83 elems in the charHexMap
 		if (elemCount >= BUFFER_SIZE)
 			return;  // buffer is full
 
@@ -58,6 +59,28 @@ void keyboard_handler() {
 		if (key == CAPS_LOCK) {  // Caps Lock
 			capsLocked = !capsLocked;
 			return;
+		}
+		if (key == LEFT_CTRL) {
+			ctrlPressed = 1;
+			return;
+		}
+		if (key == RELEASE_LEFT_CTRL) {
+			ctrlPressed = 0;
+			return;
+		}
+
+		if (ctrlPressed) {
+			if (charHexMap[key] == 'c') {
+				killProcess(getCurrentPID());
+				return;
+			}
+			if (charHexMap[key] == 'd') {
+				buffer[writeIndex] = -1;
+				elemCount++;
+				writeIndex++;
+				semPost(semaphoreId);
+				return;
+			}
 		}
 
 		buffer[writeIndex] = !isLetter(key) ? (shiftPressed ? charCapsHexMap[key] : charHexMap[key])
