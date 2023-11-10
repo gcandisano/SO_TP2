@@ -41,35 +41,6 @@ char getCharNoBlock() {
 void putChar(char c) {
 	sys_write(1, &c, 1);
 }
-
-void printRegs() {
-	uint64_t regs[17];
-	char * regsnames[] = {"RAX ",
-	                      "RBX ",
-	                      "RCX ",
-	                      "RDX ",
-	                      "RSI ",
-	                      "RDI ",
-	                      "RBP ",
-	                      "RSP ",
-	                      "R8  ",
-	                      "R9  ",
-	                      "R10 ",
-	                      "R11 ",
-	                      "R12 ",
-	                      "R13 ",
-	                      "R14 ",
-	                      "R15 ",
-	                      "RIP "};
-	print("\n\n");
-	sys_get_regs(regs);
-	for (int i = 0; i < 17; i++) {
-		char hex[17];
-		intToHex(regs[i], hex);
-		printf("%s 0x%s\n", regsnames[i], hex);
-	}
-}
-
 void printfColor(char * format, uint64_t color, ...) {
 	va_list args;
 	va_start(args, color);
@@ -206,11 +177,7 @@ void scanf(char * format, ...) {
 	va_end(vl);
 }
 
-void fillRegisters() {
-	printColor("\n\nFilling registers...\n", YELLOW);
-	printColor("Press CTRL to save them.\n", CYAN);
-	fillRegs();
-}
+
 
 char * getTime() {
 	static char bufferTime[9];

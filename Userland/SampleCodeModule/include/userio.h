@@ -23,8 +23,6 @@ void putChar(char c);
 
 unsigned int strlen(char * str);
 
-void printRegs();
-
 void printf(char * format, ...);
 
 void printfColor(char * format, uint64_t color, ...);
@@ -35,10 +33,5 @@ void strcpy(char * dest, char * src);
 
 int strncmp(char * str1, char * str2, int length);
 
-void fillRegisters();
-
-char * getTime();
-
-char * getDate();
 
 #endif

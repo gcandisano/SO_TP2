@@ -6,11 +6,6 @@
 #include <tests.h>
 #include <uStrings.h>
 
-#define READY   0
-#define BLOCKED 1
-#define RUNNING 2
-#define ZOMBIE  3
-#define DEAD    4
 
 extern void divideByZero();
 extern void invalidOpcode();
