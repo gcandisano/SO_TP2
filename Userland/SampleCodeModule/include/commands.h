@@ -25,6 +25,6 @@ char * getTime();
 char * getDate();
 void printRegs();
 void fillRegisters();
-
+int cat(char **args);
 
 #endif

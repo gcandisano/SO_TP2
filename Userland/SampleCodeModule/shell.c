@@ -27,7 +27,8 @@ static char * commandsNames[] = {"help",
                                  "unblock",
                                  "yield",
                                  "nice",
-                                 "loop"};
+                                 "loop",
+								 "cat"};
 
 static char * commands[] = {
     "\thelp: gives you a list of all existent commands.\n",
@@ -47,6 +48,7 @@ static char * commands[] = {
     "\tyield: yield the current process.\n",
     "\tnice: change the priority of a process.\n",
     "\tloop: create a process that loops forever.\n",
+	"\tcat: prints what you type.\n"
 };
 
 char * loopArgs[2] = {"loop", NULL};
@@ -207,7 +209,12 @@ void analizeBuffer(char * buffer, int count) {
 		sys_draw_image(diego, 100, 100);
 		playBSong();
 		sys_clear_screen();
-	} else {
+	} else if (commandMatch(buffer, "cat", count)) {
+		char * args[2] = {"cat", NULL};
+		int pid = sys_create_process("cat", args, &cat, 0, fds);
+		sys_wait_pid(pid);
+	} else
+	{
 		printColor("\nCommand not found. Type \"help\" for command list\n", RED);
 	}
 }
