@@ -7,6 +7,8 @@
 #include <userio.h>
 #include <uStrings.h>
 
+extern void fillRegs();
+
 #define READY   0
 #define BLOCKED 1
 #define RUNNING 2
