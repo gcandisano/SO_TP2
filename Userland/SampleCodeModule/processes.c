@@ -57,3 +57,20 @@ int killProcess(char ** argv) {
 	}
 	return 0;
 }
+
+int nice(char ** argv) {
+	if (argv[1] == 0 || argv[2] == 0) {
+		printfColor("\n\nNo process id or priority specified\n", RED);
+		return 1;
+	}
+	int zero1 = 0;
+	int zero2 = 0;
+	int pid = strtoi(argv[1], &zero1);
+	int priority = strtoi(argv[2], &zero2);
+	int response = sys_nice(pid, priority);
+	if (response != 0) {
+		printfColor("\n\nProcess %d not found\n", RED, pid);
+		return 1;
+	}
+	return 0;
+}

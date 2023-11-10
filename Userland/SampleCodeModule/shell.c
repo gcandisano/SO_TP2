@@ -12,7 +12,7 @@
 #define COMMANDS_QUANTITY (sizeof(commandsNames) / sizeof(char *))
 
 static char * commandsNames[] = {
-    "help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear", "mem", "ps", "kill"};
+    "help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear", "mem", "ps", "kill","nice"};
 
 static char * commands[] = {
     "\thelp: gives you a list of all existent commands.\n",
@@ -27,6 +27,7 @@ static char * commands[] = {
     "\tmem: prints memory status.\n",
     "\tps: prints processes info.\n",
     "\tkill: kill processes by pid.\n",
+	"\tnice: change priority of a process.\n"
 };
 
 char * loopArgs[2] = {"loop", NULL};
@@ -153,7 +154,12 @@ void analizeBuffer(char * buffer, int count) {
 		sys_draw_image(diego, 100, 100);
 		playBSong();
 		sys_clear_screen();
-	} else {
+	} else if (commandMatch(buffer, "nice", count)) {
+		char * args[4] = {"nice", &(buffer[5]), &(buffer[7]), NULL};
+		int pid = sys_create_process("nice", args, &nice, 1, fds);
+		sys_wait_pid(pid);
+	}
+	else {
 		printColor("\nCommand not found. Type \"help\" for command list\n", RED);
 	}
 }

@@ -18,6 +18,7 @@ char * getDate();
 void memInfo();
 int processesInfo();
 int killProcess(char ** argv);
+int nice(char ** argv);
 void printRegs();
 void fillRegisters();
 

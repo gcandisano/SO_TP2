@@ -6,6 +6,7 @@
 #include <keyboard.h>
 #include <mm_manager.h>
 #include <process.h>
+#include <scheduler.h>
 #include <sound.h>
 #include <stdint.h>
 #include <syscalls.h>
@@ -53,5 +54,7 @@ static int64_t sys_mem_data();
 static int64_t sys_processes_info();
 
 static int64_t sys_kill_process(uint64_t pid);
+
+static int64_t sys_nice(uint64_t pid, uint64_t priority);
 
 #endif

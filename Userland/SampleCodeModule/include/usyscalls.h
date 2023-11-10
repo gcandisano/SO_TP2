@@ -46,4 +46,6 @@ ProcessInfoPtr * sys_processes_info();
 
 uint64_t sys_kill_process(uint64_t pid);
 
+uint64_t sys_nice(uint64_t pid, uint64_t priority);
+
 #endif
