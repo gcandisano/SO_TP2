@@ -128,6 +128,15 @@ int unblockProcess(int pid) {
 	return 0;
 }
 
+int blockSys(int pid) {
+	PCB * pcb = findPcb(pid);
+	if (pcb == NULL)
+		return -1;
+	if (pcb->status == BLOCKED)
+		return unblockProcess(pid);
+	return blockProcess(pid);
+}
+
 void setFileDescriptor(int pid, int index, int value) {
 	findPcb(pid)->fd[index] = value;
 }

@@ -18,5 +18,7 @@ void memInfo();
 
 void infiniteLoop();
 
+int countDigits(char * str);
+
 
 #endif

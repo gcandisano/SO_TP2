@@ -74,3 +74,18 @@ int nice(char ** argv) {
 	}
 	return 0;
 }
+
+int block(char ** argv) {
+	if (argv[1] == 0) {
+		printfColor("\n\nNo process id specified\n", RED);
+		return 1;
+	}
+	int zero = 0;
+	int pid = strtoi(argv[1], &zero);
+	int response = sys_block(pid);
+	if (response != 0) {
+		printfColor("\n\nProcess %d not found\n", RED, pid);
+		return 1;
+	}
+	return 0;
+}

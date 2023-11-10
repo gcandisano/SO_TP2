@@ -12,7 +12,7 @@
 #define COMMANDS_QUANTITY (sizeof(commandsNames) / sizeof(char *))
 
 static char * commandsNames[] = {
-    "help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear", "mem", "ps", "kill","nice"};
+    "help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear", "mem", "ps", "kill","nice", "block"};
 
 static char * commands[] = {
     "\thelp: gives you a list of all existent commands.\n",
@@ -28,6 +28,7 @@ static char * commands[] = {
     "\tps: prints processes info.\n",
     "\tkill: kill processes by pid.\n",
 	"\tnice: change priority of a process.\n"
+	"\tblock: change process status.\n"
 };
 
 char * loopArgs[2] = {"loop", NULL};
@@ -155,16 +156,28 @@ void analizeBuffer(char * buffer, int count) {
 		playBSong();
 		sys_clear_screen();
 	} else if (commandMatch(buffer, "nice", count)) {
-		char * args[4] = {"nice", &(buffer[5]), &(buffer[7]), NULL};
+		int digits = countDigits(&(buffer[5]));
+
+		char * args[4] = {"nice", &(buffer[5]), &(buffer[7]), NULL}; //despues arreglo para el caso de mas de un digito
 		int pid = sys_create_process("nice", args, &nice, 1, fds);
 		sys_wait_pid(pid);
-	}
-	else {
+	} else if (commandMatch(buffer, "block", count)) {
+		char * args[4] = {"block", &(buffer[6]), NULL};
+		int pid = sys_create_process("block", args, &block, 1, fds);
+		sys_wait_pid(pid);
+	} else {
 		printColor("\nCommand not found. Type \"help\" for command list\n", RED);
 	}
 }
 
 
+int countDigits(char * str) {
+	int i = 0;
+	while (str[i] != ' ') {
+		i++;
+	}
+	return i;
+}
 
 void infiniteLoop(char ** argv) {
 	while (1)

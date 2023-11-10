@@ -57,4 +57,6 @@ static int64_t sys_kill_process(uint64_t pid);
 
 static int64_t sys_nice(uint64_t pid, uint64_t priority);
 
+static int64_t sys_block(uint64_t pid);
+
 #endif

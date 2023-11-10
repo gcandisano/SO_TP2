@@ -48,6 +48,8 @@ int64_t syscallHandler(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2,
 			return (int64_t) sys_kill_process(arg0);
 		case 20: 
 			return (int64_t) sys_nice(arg0, arg1);
+		case 21:	
+			return (int64_t) sys_block(arg0);
 	}
 	return -1;
 }
@@ -176,4 +178,8 @@ static int64_t sys_kill_process(uint64_t pid) {
 
 static int64_t sys_nice(uint64_t pid, uint64_t priority) {
 	return (int64_t) changePriority(pid, priority);
+}
+
+static int64_t sys_block(uint64_t pid) {
+	return (int64_t) blockSys(pid);
 }

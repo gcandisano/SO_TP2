@@ -64,6 +64,8 @@ int blockProcess(int pid);
 
 int unblockProcess(int pid);
 
+int blockSys(int pid);
+
 void setFileDescriptor(int pid, int index, int value);
 
 processInfo ** getProcessesInfo();

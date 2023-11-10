@@ -99,3 +99,7 @@ uint64_t sys_kill_process(uint64_t pid) {
 uint64_t sys_nice(uint64_t pid, uint64_t priority) {
 	return sys_call((uint64_t) 20, (uint64_t) pid, (uint64_t) priority, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
 }
+
+uint64_t sys_block(uint64_t pid) {
+	return sys_call((uint64_t) 21, (uint64_t) pid, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
+}

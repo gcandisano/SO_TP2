@@ -19,6 +19,7 @@ void memInfo();
 int processesInfo();
 int killProcess(char ** argv);
 int nice(char ** argv);
+int block(char ** argv);
 void printRegs();
 void fillRegisters();
 
