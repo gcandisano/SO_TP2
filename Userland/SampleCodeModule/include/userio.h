@@ -37,8 +37,4 @@ int strncmp(char * str1, char * str2, int length);
 
 void fillRegisters();
 
-char * getTime();
-
-char * getDate();
-
 #endif

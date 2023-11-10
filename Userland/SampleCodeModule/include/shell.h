@@ -5,12 +5,6 @@
 #include <structs.h>
 #include <uStrings.h>
 
-#define READY   0
-#define BLOCKED 1
-#define RUNNING 2
-#define ZOMBIE  3
-#define DEAD    4
-
 extern void divideByZero();
 extern void invalidOpcode();
 
@@ -22,10 +16,7 @@ void analizeBuffer(char * buffer, int count);
 
 void memInfo();
 
-int processesInfo();
-
 void infiniteLoop();
 
-int killProcess();
 
 #endif
