@@ -39,8 +39,8 @@ char isLetter(unsigned char key) {
 
 void keyboard_handler() {
 	unsigned char key = getKey();
-	if (key < 83 || key == RELEASE_SHIFT || key == CAPS_LOCK ||
-	    key == RELEASE_LEFT_CTRL) {  // 83 elems in the charHexMap
+	if (key == CAPS_LOCK || key == RELEASE_SHIFT || key == RELEASE_LEFT_CTRL ||
+	    key < 83) {  // 83 elems in the charHexMap
 		if (elemCount >= BUFFER_SIZE)
 			return;  // buffer is full
 

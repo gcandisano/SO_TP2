@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <commands.h>
 
 void memInfo() {
@@ -43,8 +45,8 @@ int processesInfo() {
 				printf("\t   Unknown");
 				break;
 		}
-		printf("\t%x", processesInfo[i]->rsp);
-		printf("   %x", processesInfo[i]->rbp);
+		printf("\t%p", processesInfo[i]->rsp);
+		printf("   %p", processesInfo[i]->rbp);
 		printf("\t%s\n", processesInfo[i]->name);
 		i++;
 	}

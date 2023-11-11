@@ -50,7 +50,7 @@ typedef struct vbe_mode_info_structure * VBEInfoPtr;
 VBEInfoPtr VBE_mode_info = (VBEInfoPtr) 0x0000000000005C00;
 
 #define MAX_LINES   VBE_mode_info->height / CHAR_HEIGHT
-#define MAX_COLUMNS VBE_mode_info->width / CHAR_WIDTH - 1
+#define MAX_COLUMNS (VBE_mode_info->width / CHAR_WIDTH - 1)
 
 void putPixel(char r, char g, char b, int x, int y) {
 	char * videoPtr = (char *) ((uint64_t) VBE_mode_info->framebuffer);

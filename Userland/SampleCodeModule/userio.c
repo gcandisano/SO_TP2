@@ -6,8 +6,6 @@
 #include <userio.h>
 #include <usyscalls.h>
 
-
-
 void print(char * string) {
 	sys_write(1, string, strlen(string));
 }
@@ -56,6 +54,7 @@ void printfColor(char * format, uint64_t color, ...) {
 					printColor(str, color);
 					break;
 				}
+				case 'p':
 				case 'x': {
 					int num = va_arg(args, int);
 					char str[9];
@@ -100,6 +99,7 @@ void printf(char * format, ...) {
 					printColor(str, WHITE);
 					break;
 				}
+				case 'p':
 				case 'x': {
 					int num = va_arg(args, int);
 					char str[9];
@@ -176,4 +176,3 @@ void scanf(char * format, ...) {
 	}
 	va_end(vl);
 }
-

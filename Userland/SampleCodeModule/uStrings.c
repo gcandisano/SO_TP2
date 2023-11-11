@@ -82,6 +82,8 @@ void intToHex(uint64_t num, char * hex) {
 }
 
 unsigned int strlen(char * str) {
+	if (str == 0)
+		return 0;
 	unsigned int i = 0;
 	while (str[i] != 0) {
 		i++;

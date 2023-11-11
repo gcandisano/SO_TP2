@@ -71,7 +71,7 @@ void stopProcess(uint64_t * stackPointer) {
 		    addProcess(currentProcess);
 		} */
 	} else {  // process didnt run the whole quantum
-		if (currentProcess->priority < MAX_PRIORITY && currentProcess->priority > 0) {
+		if (currentProcess->priority < MAX_PRIORITY) {
 			int newPriority = currentProcess->priority +
 			                  (int) (1 / (double) (currentProcess->ticks / quantums[currentProcess->priority]));
 			changePriority(currentProcess->pid, newPriority);
