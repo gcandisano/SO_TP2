@@ -84,4 +84,6 @@ static int64_t sys_get_pid();
 
 static int64_t sys_create_anon_pipe();
 
+static int64_t sys_wait(uint64_t delta);
+
 #endif
