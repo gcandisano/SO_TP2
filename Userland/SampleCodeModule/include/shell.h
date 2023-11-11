@@ -6,7 +6,6 @@
 #include <tests.h>
 #include <uStrings.h>
 
-
 extern void divideByZero();
 extern void invalidOpcode();
 
@@ -14,7 +13,7 @@ void shell();
 
 int commandMatch(char * str1, char * command, int count);
 
-void analizeBuffer(char * buffer, int count);
+int analizeBuffer(char * buffer, int count, short piped, int * fds);
 
 void memInfo();
 

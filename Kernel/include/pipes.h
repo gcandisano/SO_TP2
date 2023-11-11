@@ -18,10 +18,10 @@ typedef struct pipesType {
 	int writeSemId;
 } pipesType;
 
-void pipesInit();
-int namedPipeCreate(int name);
-int anonPipeCreate();
-void pipeDestroy(int id);
+void initPipes();
+int createNamedPipe(int name);
+int createAnonPipe();
+void destroyPipe(int id);
 void sendEOF(int id);
 int getPipeId(int name);
 int readPipe(int id, char * dest, unsigned int count);

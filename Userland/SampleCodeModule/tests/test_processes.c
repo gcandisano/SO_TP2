@@ -20,7 +20,7 @@ int64_t test_processes(char * argv[]) {
 	uint64_t max_processes;
 	int32_t totalProcesses = 0;
 	char * argvAux[] = {0};
-	int fds[3] = {0, 1, 2};
+	int fds[2] = {0, 1};
 
 	if (argv[1] == 0 || satoi(argv[1]) > 4) {
 		printfColor("Invalid Args! Arg1 must be between 1 and 4\n", RED);

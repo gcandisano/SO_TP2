@@ -7,6 +7,7 @@
 #include <lib.h>
 #include <moduleLoader.h>
 #include <naiveConsole.h>
+#include <pipes.h>
 #include <scheduler.h>
 #include <sound.h>
 #include <stdint.h>
@@ -58,7 +59,7 @@ void idle() {
 
 char * shellArgs[] = {"shell", NULL};
 char * idleArgs[] = {"idle", NULL};
-int defaultFds[] = {0, 1, 1};
+int defaultFds[] = {0, 1};
 
 int main() {
 	loadIdt();  // Setup idt before terminal runs
@@ -73,13 +74,15 @@ int main() {
 
 	semInit();
 
+	initPipes();
+
 	initKeyboard();
 
 	startScheduler();
 
 	int shell = createProcess("shell", 0, 8192, shellArgs, sampleCodeModuleAddress, 1, defaultFds);
 
-	int idlePid = createProcess("idle", 0, 1024, idleArgs, &idle, 1, defaultFds);
+	int idlePid = createProcess("idle", 0, 1024, idleArgs, &idle, 0, defaultFds);
 
 	changePriority(idlePid, 0);
 

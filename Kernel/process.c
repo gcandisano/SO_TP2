@@ -43,7 +43,6 @@ int createProcess(char * name, int parent, size_t stackSize, char ** args, void 
 
 	pcb->fd[READ_FD] = fds[READ_FD];
 	pcb->fd[WRITE_FD] = fds[WRITE_FD];
-	pcb->fd[ERROR_FD] = fds[ERROR_FD];
 	pcb->foreground = foreground;
 	pcb->stack->current = createStack((uint64_t *) pcb->stack->base + pcb->stack->size, code, args, &processWrapper);
 	pcb->semId = semCreateAnon(0);
@@ -66,6 +65,12 @@ int killProcess(int pid) {
 	PCB * pcb = findPcb(pid);
 	if (pcb == NULL)
 		return 1;
+
+	if (pcb->fd[WRITE_FD] != WRITE_FD) {
+		char eof[1] = {-1};
+		writePipe(pcb->fd[WRITE_FD], eof, 1);
+	}
+
 	if (findPcb(pcb->parent) == NULL || pcb->status == ZOMBIE) {
 		pcb->status = DEAD;
 		removeProcess(pcb);

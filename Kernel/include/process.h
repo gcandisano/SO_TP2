@@ -2,6 +2,7 @@
 #define PROCESS_H
 
 #include <lib.h>
+#include <pipes.h>
 #include <queueADT.h>
 #include <scheduler.h>
 #include <stddef.h>
@@ -15,7 +16,6 @@
 
 #define READ_FD  0
 #define WRITE_FD 1
-#define ERROR_FD 2
 #define SHELL    0
 
 #define MAX_PROCESSES 100
@@ -35,7 +35,7 @@ typedef struct PCB {
 	int parent;
 	memoryBlock * stack;
 	int status;
-	int fd[3];
+	int fd[2];
 	char foreground;
 	int semId;
 	int exitCode;

@@ -44,8 +44,6 @@ char * testmmArgs[3];
 char * testProArgs[3];
 char * testSyncArgs[4];
 
-int fds[3] = {0, 1, 0};
-
 void shell() {
 	printColor("Welcome to HomerOS. Type \"help\" for command list\n", ORANGE);
 	printColor("\nHomerOS: $> ", GREEN);
@@ -53,12 +51,13 @@ void shell() {
 	int count = 0;
 	char buffer[1024] = {0};
 	char oldBuffer[1024] = {0};
+	int defaultFds[2] = {0, 1};
 	char flag = 0;  // Used for up arrow
 	while (1) {
 		unsigned char c = getChar();
 		if (c == '\n') {
 			buffer[count] = 0;
-			analizeBuffer(buffer, count);
+			analizeBuffer(buffer, count, 0, defaultFds);
 			printColor("\nHomerOS: $> ", GREEN);
 			strcpy(oldBuffer, buffer);
 			flag = 1;
@@ -118,9 +117,48 @@ int commandMatch(char * str1, char * command, int count) {
 	return str1[i] == command[i];
 }
 
-void analizeBuffer(char * buffer, int count) {
+int hasPipe(char * buffer) {
+	int i = 0;
+	while (buffer[i] != 0) {
+		if (buffer[i] == '|')
+			return 1;
+		i++;
+	}
+	return 0;
+}
+
+void analyzePipedCommand(char * buffer, int count) {
+	char * commands[2];
+	int i = 0;
+	while (buffer[i] != 0) {
+		if (buffer[i] == '|') {
+			buffer[i] = 0;
+			commands[0] = buffer;
+			commands[1] = &(buffer[i + 2]);
+			break;
+		}
+		i++;
+	}
+
+	int pipeFd = sys_create_anon_pipe();
+	int fds1[2] = {0, pipeFd};
+	int fds2[2] = {pipeFd, 1};
+	int pid1 = analizeBuffer(commands[0], strlen(commands[0]), 1, fds1);
+	int pid2 = analizeBuffer(commands[1], strlen(commands[1]), 1, fds2);
+
+	if (pid1 > 0)
+		sys_wait_pid(pid1);
+	if (pid2 > 0)
+		sys_wait_pid(pid2);
+}
+
+int analizeBuffer(char * buffer, int count, short piped, int * fds) {
 	if (count <= 0)
-		return;
+		return -1;
+	if (hasPipe(buffer)) {
+		analyzePipedCommand(buffer, count);
+		return 0;
+	}
 	if (commandMatch(buffer, "help", count) || commandMatch(buffer, "HELP", count)) {
 		printColor("\n\nComandos disponibles:\n\n", YELLOW);
 		for (int i = 0; i < COMMANDS_QUANTITY; i++) {
@@ -140,9 +178,10 @@ void analizeBuffer(char * buffer, int count) {
 		sys_clear_screen();
 	} else if (commandMatch(buffer, "pong", count)) {
 		char * args[2] = {"pong", NULL};
-		int fds[3] = {0, 1, 2};
 		int pid = sys_create_process("pong", args, &pong, 1, fds);
-		sys_wait_pid(pid);
+		if (!piped)
+			sys_wait_pid(pid);
+		return pid;
 	} else if (commandMatch(buffer, "div0", count)) {
 		divideByZero();
 	} else if (commandMatch(buffer, "invalidop", count)) {
@@ -150,51 +189,69 @@ void analizeBuffer(char * buffer, int count) {
 	} else if (commandMatch(buffer, "mem", count)) {
 		char * args[2] = {"mem", NULL};
 		int pid = sys_create_process("mem", args, &memInfo, 1, fds);
-		sys_wait_pid(pid);
+		if (!piped)
+			sys_wait_pid(pid);
+		return pid;
 	} else if (commandMatch(buffer, "ps", count)) {
 		char * args[2] = {"ps", NULL};
 		int pid = sys_create_process("ps", args, &processesInfo, 1, fds);
-		sys_wait_pid(pid);
+		if (!piped)
+			sys_wait_pid(pid);
+		return pid;
 	} else if (commandMatch(buffer, "kill", count)) {
 		char * args[3];
 		parseCommand(args, buffer, 3);
 		int pid = sys_create_process("kill", args, &killProcess, 1, fds);
-		sys_wait_pid(pid);
+		if (!piped)
+			sys_wait_pid(pid);
+		return pid;
 	} else if (commandMatch(buffer, "block", count)) {
 		char * args[3];
 		parseCommand(args, buffer, 3);
 		int pid = sys_create_process("block", args, &blockProcess, 1, fds);
-		sys_wait_pid(pid);
+		if (!piped)
+			sys_wait_pid(pid);
+		return pid;
 	} else if (commandMatch(buffer, "unblock", count)) {
 		char * args[3];
 		parseCommand(args, buffer, 3);
 		int pid = sys_create_process("unblock", args, &unblockProcess, 1, fds);
-		sys_wait_pid(pid);
+		if (!piped)
+			sys_wait_pid(pid);
+		return pid;
 	} else if (commandMatch(buffer, "yield", count)) {
 		char * args[3] = {"yield", NULL};
 		int pid = sys_create_process("yield", args, &yield, 1, fds);
-		sys_wait_pid(pid);
+		if (!piped)
+			sys_wait_pid(pid);
+		return pid;
 	} else if (commandMatch(buffer, "nice", count)) {
 		char * args[4];
 		parseCommand(args, buffer, 4);
 		int pid = sys_create_process("nice", args, &changePriority, 1, fds);
-		sys_wait_pid(pid);
+		if (!piped)
+			sys_wait_pid(pid);
+		return pid;
 	} else if (commandMatch(buffer, "loop", count)) {
-		sys_create_process("loop", loopArgs, &infiniteLoop, 0, fds);
+		return sys_create_process("loop", loopArgs, &infiniteLoop, 0, fds);
 	} else if (commandMatch(buffer, "testmm", count)) {
 		parseCommand(testmmArgs, buffer, 3);
-		sys_create_process("testmm", testmmArgs, &test_mm, 1, fds);
+		return sys_create_process("testmm", testmmArgs, &test_mm, 1, fds);
 	} else if (commandMatch(buffer, "testpro", count)) {
 		parseCommand(testProArgs, buffer, 3);
-		sys_create_process("testpro", testProArgs, &test_processes, 0, fds);
+		return sys_create_process("testpro", testProArgs, &test_processes, 0, fds);
 	} else if (commandMatch(buffer, "testprio", count)) {
 		int pid = sys_create_process("testprio", NULL, &test_prio, 1, fds);
-		sys_wait_pid(pid);
+		if (!piped)
+			sys_wait_pid(pid);
+		return pid;
 	} else if (commandMatch(buffer, "testsync", count)) {
 		printChar('\n');
 		parseCommand(testSyncArgs, buffer, 3);
 		int pid = sys_create_process("testsync", testSyncArgs, &test_sync, 0, fds);
-		sys_wait_pid(pid);
+		if (!piped)
+			sys_wait_pid(pid);
+		return pid;
 	} else if (commandMatch(buffer, "boca", count)) {
 		sys_clear_screen();
 		sys_draw_image(diego, 100, 100);
@@ -203,10 +260,13 @@ void analizeBuffer(char * buffer, int count) {
 	} else if (commandMatch(buffer, "cat", count)) {
 		char * args[2] = {"cat", NULL};
 		int pid = sys_create_process("cat", args, &cat, 0, fds);
-		sys_wait_pid(pid);
+		if (!piped)
+			sys_wait_pid(pid);
+		return pid;
 	} else {
 		printColor("\nCommand not found. Type \"help\" for command list\n", RED);
 	}
+	return 0;
 }
 
 void infiniteLoop(char ** argv) {

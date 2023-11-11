@@ -21,7 +21,7 @@ void test_prio() {
 	int64_t pids[TOTAL_PROCESSES];
 	char * argv[] = {0};
 	uint64_t i;
-	int fds[3] = {0, 1, 0};
+	int fds[2] = {0, 1};
 
 	for (i = 0; i < TOTAL_PROCESSES; i++)
 		pids[i] = sys_create_process("endless_loop_print", argv, &endless_loop_print, 0, fds);

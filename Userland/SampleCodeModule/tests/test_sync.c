@@ -68,7 +68,7 @@ uint64_t test_sync(char * argv[]) {  //{n, use_sem, 0}
 
 	char * argvDec[] = {argv[1], "-1", argv[2], NULL};
 	char * argvInc[] = {argv[1], "1", argv[2], NULL};
-	int fds[3] = {0, 1, 0};
+	int fds[2] = {0, 1};
 
 	global = 0;
 

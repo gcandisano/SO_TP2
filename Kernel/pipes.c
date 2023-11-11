@@ -5,22 +5,21 @@
 
 pipesType pipesArr[MAX_PIPES];
 int namePipeMax = 1;
-int firstEOF = 1;
+int receivedEOF = 0;
 
-void pipesInit() {
+void initPipes() {
 	pipesArr[0].name = 0;
 	for (int i = 1; i < MAX_PIPES; i++) {
 		pipesArr[i].name = -1;
 	}
 }
 
-int namedPipeCreate(int name) {
+int createNamedPipe(int name) {
 	int availableSpace = 0;
-	for (int i = 1; i < MAX_PIPES && availableSpace == 0; i++) {
+	for (int i = 2; i < MAX_PIPES && availableSpace == 0; i++) {
 		if (pipesArr[i].name == -1) {
 			availableSpace = i;
-		}
-		if (pipesArr[i].name == name) {
+		} else if (pipesArr[i].name == name) {
 			return -1;
 		}
 	}
@@ -39,11 +38,11 @@ int namedPipeCreate(int name) {
 	return availableSpace;
 }
 
-int anonPipeCreate() {
-	return namedPipeCreate(namePipeMax);
+int createAnonPipe() {
+	return createNamedPipe(namePipeMax);
 }
 
-void pipeDestroy(int id) {
+void destroyPipe(int id) {
 	pipesArr[id].name = -1;
 	pipesArr[id].readPos = 0;
 	pipesArr[id].writePos = 0;
@@ -93,7 +92,7 @@ int readPipe(int id, char * dest, unsigned int count) {
 }
 
 int writePipe(int id, const char * src, unsigned int count) {
-	if (pipesArr[id].eof && !firstEOF) {
+	if (pipesArr[id].eof && receivedEOF) {
 		return -1;
 	}
 	for (int i = 0; i < count; i++) {
@@ -101,10 +100,10 @@ int writePipe(int id, const char * src, unsigned int count) {
 		if (pipesArr[id].writePos == PIPE_BUFFER_SIZE) {
 			pipesArr[id].writePos = 0;
 		}
-		if (pipesArr[id].eof && firstEOF) {
+		if (pipesArr[id].eof && !receivedEOF) {
 			pipesArr[id].pipeBuffer[pipesArr[id].writePos++] = EOF;
 			pipesArr[id].leftToRead++;
-			firstEOF = 0;
+			receivedEOF = 1;
 			semPost(pipesArr[id].readSemId);
 		}
 		pipesArr[id].pipeBuffer[pipesArr[id].writePos++] = (char) src[i];

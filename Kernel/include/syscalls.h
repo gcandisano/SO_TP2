@@ -5,6 +5,7 @@
 #include <defs.h>
 #include <keyboard.h>
 #include <mm_manager.h>
+#include <pipes.h>
 #include <process.h>
 #include <sound.h>
 #include <stdint.h>
@@ -80,5 +81,7 @@ static int64_t sys_sem_create(uint64_t semName, uint64_t initialValue);
 static int64_t sys_sem_delete(uint64_t semId);
 
 static int64_t sys_get_pid();
+
+static int64_t sys_create_anon_pipe();
 
 #endif

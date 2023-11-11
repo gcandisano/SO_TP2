@@ -72,4 +72,6 @@ int64_t sys_sem_delete(int semId);
 
 int64_t sys_get_pid();
 
+int64_t sys_create_anon_pipe();
+
 #endif

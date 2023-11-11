@@ -148,3 +148,7 @@ int64_t sys_sem_delete(int semId) {
 int64_t sys_get_pid() {
 	return sys_call((uint64_t) 32, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
 }
+
+int64_t sys_create_anon_pipe() {
+	return sys_call((uint64_t) 33, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
+}

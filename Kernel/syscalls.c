@@ -72,6 +72,8 @@ int64_t syscallHandler(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2,
 			return (int64_t) sys_sem_delete(arg0);
 		case 32:
 			return (int64_t) sys_get_pid();
+		case 33:
+			return (int64_t) sys_create_anon_pipe();
 	}
 	return -1;
 }
@@ -79,23 +81,23 @@ int64_t syscallHandler(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2,
 static int64_t sys_read(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t shouldNotBlock) {
 	if (fd != STDIN)
 		return -1;
-	int i = 0;
-	char c;
-	char * buff = (char *) buffer;
-	while (i < length && (c = (shouldNotBlock ? getCharNoBlock() : getChar())) != 0) {
-		buff[i] = c;
-		i++;
+	PCB * currentProcess = getCurrentPCB();
+	if (currentProcess->fd[STDIN] == STDIN) {
+		int i = 0;
+		char c;
+		char * buff = (char *) buffer;
+		while (i < length && (c = (shouldNotBlock ? getCharNoBlock() : getChar())) != 0) {
+			buff[i] = c;
+			i++;
+		}
+		return i;
+	} else {
+		return readPipe(currentProcess->fd[STDIN], (char *) buffer, length);
 	}
-	return i;
 }
 
 static int64_t sys_write(uint64_t fd, uint64_t buffer, uint64_t length) {
-	if (fd == STDOUT) {
-		printStringN((char *) buffer, length);
-	} else if (fd == STDERR) {
-		printStringNColor((char *) buffer, length, RED);
-	}
-	return length;
+	return sys_write_color(fd, buffer, length, 0xFFFFFF);
 }
 
 static int64_t sys_write_place(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t x, uint64_t y) {
@@ -108,12 +110,19 @@ static int64_t sys_write_place(uint64_t fd, uint64_t buffer, uint64_t length, ui
 }
 
 static int64_t sys_write_color(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t color) {
-	if (fd == STDOUT || fd == STDERR) {
-		Color c;
-		c.r = (char) color;
-		c.g = (char) (color >> 8);
-		c.b = (char) (color >> 16);
-		printStringNColor((char *) buffer, length, c);
+	PCB * currentProcess = getCurrentPCB();
+	if (currentProcess->fd[STDOUT] == STDOUT) {
+		if (fd == STDOUT) {
+			Color c;
+			c.r = (char) color;
+			c.g = (char) (color >> 8);
+			c.b = (char) (color >> 16);
+			printStringNColor((char *) buffer, length, c);
+		} else if (fd == STDERR) {
+			printStringNColor((char *) buffer, length, RED);
+		}
+	} else {
+		return writePipe(currentProcess->fd[STDOUT], (char *) buffer, length);
 	}
 	return length;
 }
@@ -250,4 +259,8 @@ static int64_t sys_sem_delete(uint64_t semId) {
 
 static int64_t sys_get_pid() {
 	return (int64_t) getCurrentPID();
+}
+
+static int64_t sys_create_anon_pipe() {
+	return (int64_t) createAnonPipe();
 }
