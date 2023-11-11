@@ -30,5 +30,6 @@ void fillRegisters();
 int cat(char ** args);
 int wc(char ** args);
 int filter(char ** args);
+int phylo(char ** args);
 
 #endif

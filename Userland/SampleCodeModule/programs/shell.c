@@ -11,9 +11,10 @@
 
 #define COMMANDS_QUANTITY (sizeof(commandsNames) / sizeof(char *))
 
-static char * commandsNames[] = {"help",  "time", "date",   "registers", "fillregs", "div0",     "invalidop", "pong",
-                                 "clear", "mem",  "ps",     "kill",      "block",    "unblock",  "yield",     "nice",
-                                 "loop",  "cat",  "testmm", "testpro",   "testprio", "testsync", "wc",        "filter"};
+static char * commandsNames[] = {"help",     "time",  "date",   "registers", "fillregs", "div0",    "invalidop",
+                                 "pong",     "clear", "mem",    "ps",        "kill",     "block",   "unblock",
+                                 "yield",    "nice",  "loop",   "cat",       "testmm",   "testpro", "testprio",
+                                 "testsync", "wc",    "filter", "phylos"};
 
 static char * commands[] = {
     "\thelp: gives you a list of all existent commands.\n",
@@ -39,7 +40,8 @@ static char * commands[] = {
     "\ttestprio: test priority.\n",
     "\ttestsync: test sync.\n",
     "\twc: prints the number of lines of what you type.\n",
-    "\tfilter: prints the vowels of what you type.\n"};
+    "\tfilter: prints the vowels of what you type.\n",
+    "\tphylos: go to play the \"phylos\" game.\n"};
 
 char * loopArgs[2] = {"loop", NULL};
 char * testmmArgs[3];
@@ -274,6 +276,12 @@ int analizeBuffer(char * buffer, int count, short piped, int * fds) {
 	} else if (commandMatch(buffer, "filter", count)) {
 		char * args[2] = {"filter", NULL};
 		int pid = sys_create_process("filter", args, &filter, 0, fds);
+		if (!piped)
+			sys_wait_pid(pid);
+		return pid;
+	} else if (commandMatch(buffer, "phylos", count)) {
+		char * args[2] = {"phylos", NULL};
+		int pid = sys_create_process("phylos", args, &phylo, 1, fds);
 		if (!piped)
 			sys_wait_pid(pid);
 		return pid;

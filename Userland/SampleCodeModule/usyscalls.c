@@ -152,3 +152,7 @@ int64_t sys_get_pid() {
 int64_t sys_create_anon_pipe() {
 	return sys_call((uint64_t) 33, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
 }
+
+int64_t sys_wait(uint64_t delta) {
+	return sys_call((uint64_t) 34, (uint64_t) delta, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
+}

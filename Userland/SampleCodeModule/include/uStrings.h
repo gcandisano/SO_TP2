@@ -17,4 +17,6 @@ void intToHex(uint64_t num, char * hex);
 
 unsigned int strlen(char * str);
 
+void strcat(char * dest, char * src);
+
 #endif  // U_STRINGS_H
