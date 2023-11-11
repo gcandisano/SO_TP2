@@ -1,11 +1,11 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
-#include <structs.h>
-#include <usyscalls.h>
 #include <colors.h>
-#include <userio.h>
+#include <structs.h>
 #include <uStrings.h>
+#include <userio.h>
+#include <usyscalls.h>
 
 extern void fillRegs();
 
@@ -14,6 +14,8 @@ extern void fillRegs();
 #define RUNNING 2
 #define ZOMBIE  3
 #define DEAD    4
+#define EOF     -1
+#define SIZE    1024
 
 int processesInfo();
 int killProcess(char ** argv);
@@ -25,6 +27,8 @@ char * getTime();
 char * getDate();
 void printRegs();
 void fillRegisters();
-int cat(char **args);
+int cat(char ** args);
+int wc(char ** args);
+int filter(char ** args);
 
 #endif

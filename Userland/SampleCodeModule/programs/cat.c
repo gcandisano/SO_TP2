@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <commands.h>
 
-#define SIZE 1024
+
 
 int cat(char ** args) {
 	printChar('\n');
@@ -10,7 +10,7 @@ int cat(char ** args) {
 	char c;
 	int i = 0;
 	int j = 0;
-	while ((c = getChar()) != -1) {
+	while ((c = getChar()) != EOF) {
 		if (c == '\b') {
 			if (i != 0) {
 				printChar('\b');
