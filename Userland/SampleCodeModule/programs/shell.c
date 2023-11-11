@@ -107,6 +107,9 @@ void shell() {
 
 int commandMatch(char * str1, char * command, int count) {
 	int i = 0;
+	while (*str1 == ' ') {
+		str1++;
+	}
 	while (i < count && str1[i] != 0 && command[i] != 0 && str1[i] == command[i]) {
 		i++;
 		if (str1[i] == ' ') {
@@ -134,7 +137,7 @@ void analyzePipedCommand(char * buffer, int count) {
 		if (buffer[i] == '|') {
 			buffer[i] = 0;
 			commands[0] = buffer;
-			commands[1] = &(buffer[i + 2]);
+			commands[1] = &(buffer[i + 1]);
 			break;
 		}
 		i++;
