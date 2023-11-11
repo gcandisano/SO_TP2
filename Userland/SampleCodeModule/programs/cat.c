@@ -2,15 +2,13 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <commands.h>
 
-
-
 int cat(char ** args) {
 	printChar('\n');
 	char buff[SIZE] = {0};
 	char c;
 	int i = 0;
 	int j = 0;
-	while ((c = getChar()) != EOF) {
+	while ((c = getChar()) != (char) EOF) {
 		if (c == '\b') {
 			if (i != 0) {
 				printChar('\b');

@@ -95,6 +95,9 @@ int writePipe(int id, const char * src, unsigned int count) {
 	if (pipesArr[id].eof && receivedEOF) {
 		return -1;
 	}
+	if (pipesArr[id].name <= 0) {
+		return -1;
+	}
 	for (int i = 0; i < count; i++) {
 		semWait(pipesArr[id].writeSemId);
 		if (pipesArr[id].writePos == PIPE_BUFFER_SIZE) {

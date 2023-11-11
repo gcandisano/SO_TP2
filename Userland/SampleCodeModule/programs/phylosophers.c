@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <commands.h>
 
 #define MAX_PHYLOS 15
@@ -18,11 +20,11 @@ void test(int i);
 void eat();
 void put(int i);
 
-int pids[MAX_PHYLOS];
+int pids[MAX_PHYLOS] = {0};
 
 int status[MAX_PHYLOS] = {0};
-int s[MAX_PHYLOS];
-int alt[MAX_PHYLOS];
+int s[MAX_PHYLOS] = {0};
+int alt[MAX_PHYLOS] = {0};
 
 int8_t mutex;
 int8_t printID;
@@ -54,25 +56,27 @@ int phylo(char ** arguments) {
 	while (!last) {
 		c = getChar();
 
-		if (c == 'A')
+		if (c == 'A' || c == 'a') {
 			printf("A new philosofer got hungry hmmmm...\n");
-		sys_wait(5);
-		addPhylo();
-		break;
-		if (c == 'R')
+			sys_wait(5);
+			addPhylo();
+		}
+		if (c == 'R' || c == 'r') {
 			printf("Philosopher is no longer hungry...\n");
-		sys_wait(5);
-		remove();
-		break;
-		if (c == 'Q')
+			sys_wait(5);
+			remove();
+		}
+		if (c == 'Q' || c == 'q') {
 			printf("That's all folks\n");
-		last = 1;
-		break;
+			last = 1;
+		}
 	}
-	sys_wait_pid(pids[0]);
-	for (int i = 1; i < current; i++) {
+	// sys_wait_pid(pids[0]);
+	for (int i = 0; i < current; i++) {
 		sys_kill_process(pids[i]);
 		sys_kill_process(pids[i]);
+		sys_sem_close(s[i]);
+		sys_sem_close(alt[i]);
 		sys_sem_delete(s[i]);
 		sys_sem_delete(alt[i]);
 	}
@@ -87,10 +91,10 @@ void addPhylo() {
 	if (current == MAX_PHYLOS) {
 		printf("MAX PHYLOS REACHED\n");
 	} else {
-		char * str;
+		char str[12];
 		intToStr(current, str);
-		char * sphylos = {"s"};
-		char * altphylos = {"alt"};
+		char sphylos[15] = {"s"};
+		char altphylos[15] = {"alt"};
 		strcat(sphylos, str);
 		strcat(altphylos, str);
 
@@ -98,7 +102,7 @@ void addPhylo() {
 		s[current] = sys_sem_create(sphylos, 0);
 		alt[current] = sys_sem_create(altphylos, 1);
 
-		char string[12] = {"philosopher"};
+		char string[] = {"philosopher"};
 		char ** phylos = {0};
 
 		char ** args = (char **) sys_malloc(3 * sizeof(char *));
@@ -116,7 +120,7 @@ void addPhylo() {
 		args[1] = buf;
 		args[2] = NULL;
 		phylos = args;
-		int fds[2] = {0, 0};
+		int fds[2] = {0, 1};
 		pids[current] = sys_create_process(string, phylos, &philo, 0, fds);
 		if (pids[current] <= 0) {
 			printf("error creating philosopher. aborting\n");
@@ -142,16 +146,19 @@ int philo(char ** num) {
 }
 
 void remove() {
-	sys_sem_wait(mutex);
-
 	if (current == MIN_PHYLOS) {
 		printf("MIN PHYLOS REACHED\n");
-	} else {
-		current--;
-		sys_kill_process(pids[current]);
-		sys_sem_delete(s[current]);
-		sys_sem_delete(alt[current]);
+		return;
 	}
+	sys_sem_wait(mutex);
+
+	current--;
+	sys_kill_process(pids[current]);
+	sys_sem_close(s[current]);
+	sys_sem_delete(s[current]);
+	sys_sem_close(alt[current]);
+	sys_sem_delete(alt[current]);
+
 	sys_sem_post(mutex);
 }
 
