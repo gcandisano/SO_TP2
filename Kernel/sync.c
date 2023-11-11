@@ -67,16 +67,16 @@ sem_t semOpen(char * semName) {
 	if (i == MAX_SEMAPHORES || semaphores[i].destroying) {
 		return -1;
 	}
-	semaphores[i].activeProcesses[getCurrentPID()] = 1;
+	semaphores[i].activeProcesses[getCurrentPID() % MAX_PROCESSES] = 1;
 	semaphores[i].activeProcessDim++;
 	return i;
 }
 
 sem_t semClose(sem_t sem) {
 	if (sem > MAX_SEMAPHORES || sem < 0 || semaphores[sem].name == NULL ||
-	    semaphores[sem].activeProcesses[getCurrentPID()] == false)
+	    semaphores[sem].activeProcesses[getCurrentPID() % MAX_PROCESSES] == false)
 		return -1;
-	semaphores[sem].activeProcesses[getCurrentPID()] = false;
+	semaphores[sem].activeProcesses[getCurrentPID() % MAX_PROCESSES] = false;
 	semaphores[sem].activeProcessDim--;
 	return 0;
 }
@@ -94,7 +94,7 @@ sem_t semCreateAnon(int initVal) {
 sem_t semAnonOpen(sem_t sem) {
 	if (semaphores[sem].name == NULL || semaphores[sem].destroying)
 		return -1;
-	semaphores[sem].activeProcesses[getCurrentPID()] = true;
+	semaphores[sem].activeProcesses[getCurrentPID() % MAX_PROCESSES] = true;
 	semaphores[sem].activeProcessDim++;
 	return 0;
 }

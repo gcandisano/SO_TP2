@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "test_util.h"
 
+#include <colors.h>
 #include <userio.h>
 #include <usyscalls.h>
 
@@ -21,8 +22,10 @@ int64_t test_processes(char * argv[]) {
 	char * argvAux[] = {0};
 	int fds[3] = {0, 1, 2};
 
-	if (argv[1] == 0)
+	if (argv[1] == 0 || satoi(argv[1]) > 4) {
+		printfColor("Invalid Args! Arg1 must be between 1 and 4\n", RED);
 		return -1;
+	}
 
 	if ((max_processes = satoi(argv[1])) <= 0)
 		return -1;
