@@ -160,3 +160,7 @@ int64_t sys_wait(uint64_t delta) {
 int64_t sys_create_anon_sem(int initialValue) {
 	return sys_call((uint64_t) 35, (uint64_t) initialValue, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
 }
+
+int64_t sys_sem_anon_open(int semID) {
+	return sys_call((uint64_t) 36, (uint64_t) semID, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
+}

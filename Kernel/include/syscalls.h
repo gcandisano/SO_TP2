@@ -88,4 +88,6 @@ static int64_t sys_wait(uint64_t delta);
 
 static int64_t sys_create_anon_sem(uint64_t initialValue);
 
+static int64_t sys_sem_anon_open(uint64_t semId);
+
 #endif

@@ -60,18 +60,15 @@ int phylo(char ** arguments) {
 			printf("A new philosofer got hungry hmmmm...\n");
 			sys_wait(5);
 			addPhylo();
-			break;
 		}
 		if (c == 'R' || c == 'r') {
 			printf("Philosopher is no longer hungry...\n");
 			sys_wait(5);
 			remove();
-			break;
 		}
 		if (c == 'Q' || c == 'q') {
 			printf("That's all folks\n");
 			last = 1;
-			break;
 		}
 	}
 	// sys_wait_pid(pids[0]);
@@ -95,14 +92,11 @@ void addPhylo() {
 	if (current == MAX_PHYLOS) {
 		printf("MAX PHYLOS REACHED\n");
 	} else {
-		char str[12];
-
 		status[current] = THINKING;
 		s[current] = sys_create_anon_sem(0);
 		alt[current] = sys_create_anon_sem(1);
-
-		char string[] = {"philosopher"};
-		char ** phylos = {0};
+		sys_sem_anon_open(s[current]);
+		sys_sem_anon_open(alt[current]);
 
 		char ** args = (char **) sys_malloc(3 * sizeof(char *));
 		if (args == NULL) {
@@ -115,11 +109,10 @@ void addPhylo() {
 		}
 		intToStr(current, buf);
 
-		args[0] = (char *) (intptr_t) (args[0], string);
+		args[0] = "phylosophers";
 		args[1] = buf;
-		phylos = args;
 		int fds[2] = {0, 1};
-		pids[current] = sys_create_process(string, phylos, &philo, 0, fds);
+		pids[current] = sys_create_process("phylosophers", args, &philo, 0, fds);
 		if (pids[current] <= 0) {
 			printf("error creating philosopher. aborting\n");
 			return;
@@ -153,9 +146,7 @@ void remove() {
 
 	current--;
 	sys_kill_process(pids[current]);
-	sys_sem_close(s[current]);
 	sys_sem_delete(s[current]);
-	sys_sem_close(alt[current]);
 	sys_sem_delete(alt[current]);
 
 	sys_sem_post(mutex);
