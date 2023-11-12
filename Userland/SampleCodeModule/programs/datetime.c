@@ -13,3 +13,13 @@ char * getDate() {
 	sys_get_date(bufferDate);
 	return bufferDate;
 }
+
+void timePrint() {
+	printfColor("\n\nTime of OS: ", YELLOW);
+	printfColor("%s\n", CYAN, getTime());
+}
+
+void datePrint() {
+	printfColor("\n\nDate of OS: ", YELLOW);
+	printfColor("%s\n", CYAN, getDate());
+}

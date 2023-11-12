@@ -25,6 +25,8 @@ int changePriority(char ** argv);
 void yield();
 char * getTime();
 char * getDate();
+void timePrint();
+void datePrint();
 void printRegs();
 void fillRegisters();
 int cat(char ** args);

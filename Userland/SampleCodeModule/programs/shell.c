@@ -172,15 +172,29 @@ int analizeBuffer(char * buffer, int count, short piped, int * fds) {
 			printColor(commands[i], CYAN);
 		}
 	} else if (commandMatch(buffer, "time", count)) {
-		printfColor("\n\nTime of OS: ", YELLOW);
-		printfColor("%s\n", CYAN, getTime());
+		char * args[2] = {"time", NULL};
+		int pid = sys_create_process("time", args, &timePrint, 0, fds);
+		if (!piped)
+			sys_wait_pid(pid);
+		return pid;
 	} else if (commandMatch(buffer, "date", count)) {
-		printfColor("\n\nDate of OS: ", YELLOW);
-		printfColor("%s\n", CYAN, getDate());
+		char * args[2] = {"date", NULL};
+		int pid = sys_create_process("date", args, &datePrint, 0, fds);
+		if (!piped)
+			sys_wait_pid(pid);
+		return pid;
 	} else if (commandMatch(buffer, "registers", count)) {
-		printRegs();
+		char * args[2] = {"registers", NULL};
+		int pid = sys_create_process("registers", args, &printRegs, 0, fds);
+		if (!piped)
+			sys_wait_pid(pid);
+		return pid;
 	} else if (commandMatch(buffer, "fillregs", count)) {
-		fillRegisters();
+		char * args[2] = {"fillregs", NULL};
+		int pid = sys_create_process("fillregs", args, &fillRegisters, 0, fds);
+		if (!piped)
+			sys_wait_pid(pid);
+		return pid;
 	} else if (commandMatch(buffer, "clear", count)) {
 		sys_clear_screen();
 	} else if (commandMatch(buffer, "pong", count)) {
