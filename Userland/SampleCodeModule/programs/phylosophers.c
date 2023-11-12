@@ -60,15 +60,18 @@ int phylo(char ** arguments) {
 			printf("A new philosofer got hungry hmmmm...\n");
 			sys_wait(5);
 			addPhylo();
+			break;
 		}
 		if (c == 'R' || c == 'r') {
 			printf("Philosopher is no longer hungry...\n");
 			sys_wait(5);
 			remove();
+			break;
 		}
 		if (c == 'Q' || c == 'q') {
 			printf("That's all folks\n");
 			last = 1;
+			break;
 		}
 	}
 	// sys_wait_pid(pids[0]);
@@ -80,7 +83,8 @@ int phylo(char ** arguments) {
 		sys_sem_delete(s[i]);
 		sys_sem_delete(alt[i]);
 	}
-
+	sys_sem_close(mutex);
+	sys_sem_close(printID);
 	sys_sem_delete(mutex);
 	sys_sem_delete(printID);
 	return 0;
@@ -92,15 +96,10 @@ void addPhylo() {
 		printf("MAX PHYLOS REACHED\n");
 	} else {
 		char str[12];
-		intToStr(current, str);
-		char sphylos[15] = {"s"};
-		char altphylos[15] = {"alt"};
-		strcat(sphylos, str);
-		strcat(altphylos, str);
 
 		status[current] = THINKING;
-		s[current] = sys_sem_create(sphylos, 0);
-		alt[current] = sys_sem_create(altphylos, 1);
+		s[current] = sys_create_anon_sem(0);
+		alt[current] = sys_create_anon_sem(1);
 
 		char string[] = {"philosopher"};
 		char ** phylos = {0};
@@ -116,9 +115,8 @@ void addPhylo() {
 		}
 		intToStr(current, buf);
 
-		strcpy(args[0], string);
+		args[0] = (char *) (intptr_t) (args[0], string);
 		args[1] = buf;
-		args[2] = NULL;
 		phylos = args;
 		int fds[2] = {0, 1};
 		pids[current] = sys_create_process(string, phylos, &philo, 0, fds);
@@ -150,6 +148,7 @@ void remove() {
 		printf("MIN PHYLOS REACHED\n");
 		return;
 	}
+	sys_sem_wait(alt[current - 1]);
 	sys_sem_wait(mutex);
 
 	current--;
@@ -163,7 +162,7 @@ void remove() {
 }
 
 void think() {
-	for (int i = 0; i < 50000; i++)
+	for (int i = 0; i < 5000000; i++)
 		;
 }
 
@@ -176,8 +175,10 @@ void forks(int i) {
 }
 
 void eat() {
-	sys_wait(10);
+	for (int i = 0; i < 5000000; i++)
+		;
 	sys_sem_wait(printID);
+
 	for (int i = 0; i < current; i++) {
 		printf(status[i] == EATING ? "E " : ". ", 2);
 	}

@@ -2,13 +2,14 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <stdint.h>
 
-void strcpy(char * dest, char * src) {
+int strcpy(char * dest, char * src) {
 	int i = 0;
 	while (src[i] != 0) {
 		dest[i] = src[i];
 		i++;
 	}
 	dest[i] = 0;
+	return i;
 }
 
 int strncmp(char * str1, char * str2, int length) {

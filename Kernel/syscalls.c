@@ -76,6 +76,8 @@ int64_t syscallHandler(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2,
 			return (int64_t) sys_create_anon_pipe();
 		case 34:
 			return (int64_t) sys_wait(arg0);
+		case 35:
+			return (int64_t) sys_create_anon_sem(arg0);
 	}
 	return -1;
 }
@@ -270,4 +272,8 @@ static int64_t sys_create_anon_pipe() {
 static int64_t sys_wait(uint64_t delta) {
 	timer_wait(delta);
 	return 0;
+}
+
+static int64_t sys_create_anon_sem(uint64_t initialValue) {
+	return (int64_t) semCreateAnon((int) initialValue);
 }
