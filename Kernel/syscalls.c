@@ -192,7 +192,7 @@ static int64_t sys_draw_image(uint64_t image, uint64_t width, uint64_t height) {
 }
 
 static int64_t sys_create_process(uint64_t name, uint64_t args, uint64_t code, uint64_t fg, uint64_t fds) {
-	return (int64_t) createProcess((char *) name, -1, 4096, (char **) args, (void *) code, (char) fg, (int *) fds);
+	return (int64_t) createProcess((char *) name, -1, 20000, (char **) args, (void *) code, (char) fg, (int *) fds);
 }
 
 static int64_t sys_wait_pid(uint64_t pid) {

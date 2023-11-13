@@ -88,8 +88,7 @@ int main() {
 
 	startShell(shell);
 
-	// ((EntryPoint)sampleCodeModuleAddress)(); //Calling sampleCodeModule's main
-	// address
+	// ((EntryPoint)sampleCodeModuleAddress)(); //Calling sampleCodeModule's main address
 	beep();
 	return 0;
 }

@@ -2,14 +2,11 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <sync.h>
 
-TSem * semaphores;
+char * anonSemName = "AnonSem";
+
+TSem semaphores[MAX_SEMAPHORES];
 
 void semInit() {
-	semaphores = (TSem *) malloc(sizeof(TSem) * MAX_SEMAPHORES);
-	if (semaphores == NULL) {
-		return;
-	}
-
 	int i;
 	memset(semaphores, 0, sizeof(TSem) * MAX_SEMAPHORES);
 	initMutex();
@@ -40,12 +37,14 @@ sem_t semCreate(char * name, int initValue) {
 }
 
 int semDestroy(sem_t id) {
-	if (semaphores[id].name == NULL || semaphores[id].destroying) {
+	if (id < 0 || id >= MAX_SEMAPHORES || semaphores[id].name == NULL || semaphores[id].destroying) {
 		return -1;
 	}
 
 	semaphores[id].destroying = true;
 	deleteQueue(semaphores[id].blockedProcesses);
+	if (semaphores[id].name != anonSemName)
+		free(semaphores[id].name);
 	memset(&semaphores[id], 0, sizeof(TSem));  // Clear the semaphore
 	return 0;
 }
@@ -73,7 +72,7 @@ sem_t semOpen(char * semName) {
 }
 
 sem_t semClose(sem_t sem) {
-	if (sem > MAX_SEMAPHORES || sem < 0 || semaphores[sem].name == NULL ||
+	if (sem < 0 || sem >= MAX_SEMAPHORES || semaphores[sem].name == NULL ||
 	    semaphores[sem].activeProcesses[getCurrentPID() % MAX_PROCESSES] == false)
 		return -1;
 	semaphores[sem].activeProcesses[getCurrentPID() % MAX_PROCESSES] = false;
@@ -85,15 +84,15 @@ sem_t semCreateAnon(int initVal) {
 	sem_t minFreeSemID = findMinFreeSemID();
 	if (minFreeSemID == -1)
 		return -1;
-	
-	semaphores[minFreeSemID].name = "AnonSem";
+
+	semaphores[minFreeSemID].name = anonSemName;
 	semaphores[minFreeSemID].value = initVal;
 	semaphores[minFreeSemID].blockedProcesses = createQueue();
 	return minFreeSemID;
 }
 
 sem_t semAnonOpen(sem_t sem) {
-	if (semaphores[sem].name == NULL || semaphores[sem].destroying)
+	if (sem < 0 || sem >= MAX_SEMAPHORES || semaphores[sem].name == NULL || semaphores[sem].destroying)
 		return -1;
 	semaphores[sem].activeProcesses[getCurrentPID() % MAX_PROCESSES] = true;
 	semaphores[sem].activeProcessDim++;
@@ -141,7 +140,7 @@ int semPost(sem_t sem) {
 }
 
 int semSet(int semId, int value) {
-	if (semId < 0 || semId > MAX_SEMAPHORES || value < 0) {
+	if (semId < 0 || semId >= MAX_SEMAPHORES || value < 0) {
 		return -1;
 	}
 

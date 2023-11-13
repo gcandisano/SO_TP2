@@ -22,8 +22,8 @@ int64_t test_processes(char * argv[]) {
 	char * argvAux[] = {0};
 	int fds[2] = {0, 1};
 
-	if (argv[1] == 0 || satoi(argv[1]) > 4) {
-		printfColor("Invalid Args! Arg1 must be between 1 and 4\n", RED);
+	if (argv[1] == 0) {
+		printfColor("\nProcess amount required\n", RED);
 		return -1;
 	}
 
@@ -59,10 +59,7 @@ int64_t test_processes(char * argv[]) {
 								printf("test_processes: ERROR killing process\n");
 								return -1;
 							}
-							if (sys_kill_process(p_rqs[rq].pid) != 0) {
-								printf("test_processes: ERROR killing process 2\n");
-								return -1;
-							}
+							sys_kill_process(p_rqs[rq].pid);
 							p_rqs[rq].state = KILLED;
 							alive--;
 						}

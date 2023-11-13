@@ -125,6 +125,7 @@ int unblockProcess(int pid) {
 	PCB * pcb = findPcb(pid);
 	if (pcb == NULL)
 		return -1;
+	changePriority(pid, MAX_PRIORITY);
 	pcb->status = READY;
 	return 0;
 }

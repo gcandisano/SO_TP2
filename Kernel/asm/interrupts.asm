@@ -249,7 +249,7 @@ _irq01Handler:
 	pushState
 
 	in al, 0x60
-	cmp al, 0x1D; Left Control key
+	cmp al, 0x38; Left ALT key
 	je saveRegisters
 
 	continueKeyboard:

@@ -67,11 +67,9 @@ int phylo(char ** arguments) {
 			remove();
 		}
 		if (c == 'Q' || c == 'q') {
-			printf("That's all folks\n");
 			last = 1;
 		}
 	}
-	// sys_wait_pid(pids[0]);
 	for (int i = 0; i < current; i++) {
 		sys_kill_process(pids[i]);
 		sys_kill_process(pids[i]);
@@ -84,6 +82,7 @@ int phylo(char ** arguments) {
 	sys_sem_close(printID);
 	sys_sem_delete(mutex);
 	sys_sem_delete(printID);
+	printf("That's all folks\n");
 	return 0;
 }
 
@@ -123,8 +122,11 @@ void addPhylo() {
 	sys_sem_post(mutex);
 }
 
-int philo(char ** num) {
-	int i = atoi(num[1]);
+int philo(char ** args) {
+	char * arg = args[1];
+	sys_free(arg);
+	sys_free(args);
+	int i = atoi(arg);
 	while (!last) {
 		sys_sem_wait(alt[i]);
 		think();
@@ -146,6 +148,9 @@ void remove() {
 
 	current--;
 	sys_kill_process(pids[current]);
+	sys_kill_process(pids[current]);
+	sys_sem_close(s[current]);
+	sys_sem_close(alt[current]);
 	sys_sem_delete(s[current]);
 	sys_sem_delete(alt[current]);
 
@@ -153,7 +158,7 @@ void remove() {
 }
 
 void think() {
-	for (int i = 0; i < 5000000; i++)
+	for (int i = 0; i < 10000000; i++)
 		;
 }
 
@@ -166,12 +171,12 @@ void forks(int i) {
 }
 
 void eat() {
-	for (int i = 0; i < 5000000; i++)
+	for (int i = 0; i < 10000000; i++)
 		;
 	sys_sem_wait(printID);
 
 	for (int i = 0; i < current; i++) {
-		printf(status[i] == EATING ? "E " : ". ", 2);
+		printf(status[i] == EATING ? "E " : ". ");
 	}
 	printf("\n");
 	sys_sem_post(printID);

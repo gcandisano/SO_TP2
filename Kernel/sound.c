@@ -51,40 +51,40 @@ void playSimpsons() {
 	playNote(FASharp, 2, 4);
 	playNote(LA, 2, 3);
 
-	if (getChar() != 0) {
-		getChar();  // Consume release
-		return;
-	}
+	/* if (getChar() != 0) {
+	    getChar();  // Consume release
+	    return;
+	} */
 
 	playNote(SOL, 3, 4);
 	playNote(MI, 2, 2);
 	playNote(DO, 2, 2);
 	playNote(LA, 2, 3);
 
-	if (getChar() != 0) {
-		getChar();
-		return;
-	}
+	/* if (getChar() != 0) {
+	    getChar();
+	    return;
+	} */
 
 	playNote(FASharp, 1, 2);
 	playNote(FASharp, 1, 2);
 	playNote(FASharp, 1, 2);
 	playNote(SOL, 2, 5);
 
-	if (getChar() != 0) {
-		getChar();
-		return;
-	}
+	/* if (getChar() != 0) {
+	    getChar();
+	    return;
+	} */
 
 	playNote(FASharp, 1, 2);
 	playNote(FASharp, 1, 2);
 	playNote(FASharp, 1, 2);
 	playNote(SOL, 1, 3);
 
-	if (getChar() != 0) {
-		getChar();
-		return;
-	}
+	/* if (getChar() != 0) {
+	    getChar();
+	    return;
+	} */
 
 	playNote(LA, 6, 6);
 	playNote(SI2, 2, 0);

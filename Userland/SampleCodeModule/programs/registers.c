@@ -32,6 +32,6 @@ void printRegs() {
 
 void fillRegisters() {
 	printColor("\n\nFilling registers...\n", YELLOW);
-	printColor("Press CTRL to save them.\n", CYAN);
+	printColor("Press ALT to save them.\n", CYAN);
 	fillRegs();
 }

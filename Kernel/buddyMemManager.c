@@ -1,6 +1,5 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#define BUDDY
 #ifdef BUDDY
 
 #include <mm_manager.h>
@@ -45,7 +44,8 @@ void startMemoryManager(const void * start_address, uint64_t size) {
 	if (MIN_EXP > maxExp)
 		return;
 
-	memset(blocks, 0, sizeof(blocks));
+	for (uint8_t i = 0; i < LEVELS; i++)
+		blocks[i] = NULL;
 
 	memory_data.free = size;
 	memory_data.total = size;
@@ -98,7 +98,7 @@ int free(void * address) {
 	Block * block = (Block *) (address - sizeof(Block));
 	if (!block->is_used)
 		return -1;
-	block->is_used = true;
+	block->is_used = false;
 
 	uint64_t blockSize = 1L << block->exp;
 	memory_data.free += blockSize;

@@ -71,7 +71,13 @@ void keyboard_handler() {
 
 		if (ctrlPressed) {
 			if (charHexMap[key] == 'c') {
-				killProcess(getCurrentPID());
+				if (killProcess(getCurrentPID()) != 0)
+					printStringColor("\nHomerOS: $> ", GREEN);
+				return;
+			}
+			if (charHexMap[key] == 'l') {
+				clearScreen();
+				printStringColor("\nHomerOS: $> ", GREEN);
 				return;
 			}
 			if (charHexMap[key] == 'd') {

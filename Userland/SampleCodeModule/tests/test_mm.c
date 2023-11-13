@@ -3,6 +3,7 @@
 #include "test_util.h"
 
 // #include <string.h>
+#include <colors.h>
 #include <uStrings.h>
 #include <userio.h>
 #include <usyscalls.h>
@@ -20,11 +21,15 @@ uint64_t test_mm(char * argv[]) {
 	uint32_t total;
 	uint64_t max_memory;
 
-	if (argv[1] == 0)
+	if (argv[1] == 0) {
+		printfColor("\nERROR: Argument required\n", RED);
 		return -1;
+	}
 
-	if ((max_memory = satoi(argv[1])) <= 0)
+	if ((max_memory = satoi(argv[1])) <= 0) {
+		printfColor("\nERROR: Invalid argument\n", RED);
 		return -1;
+	}
 
 	while (1) {
 		rq = 0;
