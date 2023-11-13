@@ -6,6 +6,8 @@
 #include <stdint.h>
 #include <videodriver.h>
 
+#define LIST_SPACE (1 << 27)  // 128 MB
+
 struct node {
 	void * address;
 	uint64_t size;

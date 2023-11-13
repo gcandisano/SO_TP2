@@ -70,7 +70,7 @@ int main() {
 
 	saveOriginalRegs();
 
-	startMemoryManager(memoryManagerStart, (128 * 1024 * 1024));
+	startMemoryManager(memoryManagerStart, (1 << 27));
 
 	semInit();
 

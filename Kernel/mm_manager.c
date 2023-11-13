@@ -1,5 +1,7 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// #define BUDDY
+#ifndef BUDDY
 #include <mm_manager.h>
 
 struct node memory_list;
@@ -10,7 +12,7 @@ void * list_address;
 
 void startMemoryManager(const void * start_address, uint64_t size) {
 	list_address = (void *) start_address;
-	memory_list.address = (void *) start_address + (128 * 1024 * 1024);
+	memory_list.address = (void *) start_address + LIST_SPACE;
 	memory_list.size = size;
 	memory_list.is_free = true;
 	memory_list.prev = NULL;
@@ -93,3 +95,4 @@ int free(void * address) {
 MemoryDataPtr getMemoryData() {
 	return &memory_data;
 }
+#endif
