@@ -85,6 +85,7 @@ sem_t semCreateAnon(int initVal) {
 	sem_t minFreeSemID = findMinFreeSemID();
 	if (minFreeSemID == -1)
 		return -1;
+	
 	semaphores[minFreeSemID].name = "AnonSem";
 	semaphores[minFreeSemID].value = initVal;
 	semaphores[minFreeSemID].blockedProcesses = createQueue();
