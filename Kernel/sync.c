@@ -118,8 +118,7 @@ int semWait(sem_t sem) {
 	} else {
 		enqueue(semaphores[sem].blockedProcesses, getCurrentPCB());
 		unlockMutex(sem);
-		int currentPid = getCurrentPID();
-		blockProcess(currentPid);
+		blockProcess(getCurrentPID());
 		return 0;
 	}
 }
@@ -159,44 +158,41 @@ int semSet(int semId, int value) {
 
 // MUTEX
 
-TMutex mutexArray[MAX_SEMAPHORES];  // we only use one mutex per semaphore
+TMutex mutexArray[MAX_SEMAPHORES];
 
 void initMutex() {
 	memset(mutexArray, 0, sizeof(TMutex) * MAX_SEMAPHORES);
 }
 
-void lockMutex(int mutexID) {
-	if (enterCritRegion(&mutexArray[mutexID].value)) {
-		mutexArray[mutexID].currentOwnerPID = getCurrentPID();
-	} else {
-		enqueue(mutexArray[mutexID].blockedProcesses, getCurrentPCB());
+void lockMutex(int id) {
+	if (!enterCritRegion(&mutexArray[id].value)) {
+		enqueue(mutexArray[id].blockedProcesses, getCurrentPCB());
 		blockProcess(getCurrentPID());
 	}
 }
-void unlockMutex(int mutexID) {
-	mutexArray[mutexID].currentOwnerPID = -1;
-	PCB * headOfQueue = dequeue(mutexArray[mutexID].blockedProcesses);
+
+void unlockMutex(int id) {
+	PCB * headOfQueue = dequeue(mutexArray[id].blockedProcesses);
 	if (headOfQueue != NULL) {
 		unblockProcess(headOfQueue->pid);
 	} else {
-		mutexArray[mutexID].value = 0;
+		mutexArray[id].value = 0;
 	}
 }
 
-void createMutex(int mutexID) {
-	if (mutexID < 0 || mutexID >= MAX_SEMAPHORES) {
+void createMutex(int id) {
+	if (id < 0 || id >= MAX_SEMAPHORES) {
 		return;
 	}
-	if (mutexArray[mutexID].blockedProcesses == NULL) {
-		mutexArray[mutexID].blockedProcesses = createQueue();
+	if (mutexArray[id].blockedProcesses == NULL) {
+		mutexArray[id].blockedProcesses = createQueue();
 	}
-	mutexArray[mutexID].value = 0;
-	mutexArray[mutexID].currentOwnerPID = -1;
+	mutexArray[id].value = 0;
 }
 
-void deleteMutex(int mutexID) {
-	if (mutexID < 0 || mutexID >= MAX_SEMAPHORES) {
+void deleteMutex(int id) {
+	if (id < 0 || id >= MAX_SEMAPHORES) {
 		return;
 	}
-	deleteQueue(mutexArray[mutexID].blockedProcesses);
+	deleteQueue(mutexArray[id].blockedProcesses);
 }

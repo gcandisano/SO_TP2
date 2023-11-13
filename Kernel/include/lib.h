@@ -18,4 +18,6 @@ unsigned int strlen(char * str);
 void strcpy(char * dest, char * src);
 int strcmp(char * str1, char * str2);
 
+unsigned int log(uint64_t n, int base);
+
 #endif

@@ -82,4 +82,6 @@ int64_t sys_sem_anon_open(int semID);
 
 int64_t sys_free_processes_info(ProcessInfoPtr * info);
 
+int64_t sys_destroy_pipe(int id);
+
 #endif

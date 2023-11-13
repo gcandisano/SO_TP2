@@ -75,3 +75,10 @@ int strcmp(char * str1, char * str2) {
 	}
 	return 0;
 }
+
+unsigned int log(uint64_t n, int base) {
+	unsigned int count = 0;
+	while (n /= base)
+		count++;
+	return count;
+}

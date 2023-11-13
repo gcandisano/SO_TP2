@@ -23,7 +23,6 @@ typedef struct TSem {
 typedef struct TMutex {
 	QueueADT blockedProcesses;
 	char value;
-	int currentOwnerPID;
 } TMutex;
 
 void semInit();
@@ -50,18 +49,18 @@ int semPost(sem_t sem);
 
 int semSet(int semId, int value);
 
-extern int enterCritRegion(char * semValue);
-
 // MUTEX
+
+extern int enterCritRegion(char * semValue);
 
 void initMutex();
 
-void lockMutex(int mutexID);
+void lockMutex(int id);
 
-void unlockMutex(int mutexID);
+void unlockMutex(int id);
 
-void createMutex(int mutexID);
+void createMutex(int id);
 
-void delteMutex(int mutexID);
+void delteMutex(int id);
 
 #endif

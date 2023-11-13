@@ -66,16 +66,13 @@ void stopProcess(uint64_t * stackPointer) {
 			changePriority(currentProcess->pid,
 			               currentProcess->priority - 1);  // decrease its priority
 		}
-		/*  else {
-		    removeProcess(currentProcess);
-		    addProcess(currentProcess);
-		} */
 	} else {  // process didnt run the whole quantum
 		if (currentProcess->priority < MAX_PRIORITY) {
 			if (currentProcess->ticks == 0)
 				return;
 			int newPriority = currentProcess->priority +
-			                  (int) (1 / ((double) currentProcess->ticks / quantums[currentProcess->priority]));
+			                  (int) (1 / ((double) currentProcess->ticks /
+			                              quantums[currentProcess->priority]));  // 1/proportion of quantum used
 			changePriority(currentProcess->pid, newPriority);
 		} else {
 			removeProcess(currentProcess);
@@ -88,11 +85,11 @@ uint64_t * changeProcess(uint64_t * rsp) {
 	stopProcess(rsp);
 	PCB * nextProcess = getNextProcess();
 	if (currentProcess->status == RUNNING) {
-		currentProcess->status = READY;  // the process is now ready
+		currentProcess->status = READY;
 		currentProcess->ticks = 0;
 	}
-	currentProcess = nextProcess;      // the actual process is the one i found
-	currentProcess->status = RUNNING;  // the process is now running
+	currentProcess = nextProcess;
+	currentProcess->status = RUNNING;
 	return currentProcess->stack->current;
 }
 
@@ -134,19 +131,15 @@ void addProcess(PCB * process) {
 	process->priority = MAX_PRIORITY;
 	process->ticks = 0;
 
-	// Set the current foreground process
 	if (process->pid != 1 && process->pid != 2 && process->foreground == 1) {
 		foregroundProcess = process->pid;
 	}
 
-	// Adding process to the max priority queue.
 	enqueue(queues[process->priority], process);
-	// cantProcess++;
 }
 
 void removeProcess(PCB * process) {
 	dequeueByData(queues[process->priority], process);
-	// cantProcess--;
 }
 
 int auxPid;
@@ -182,7 +175,7 @@ int changePriority(int pid, int newPriority) {
 	dequeueByData(queues[processToChange->priority], processToChange);
 	if (newPriority > MAX_PRIORITY) {
 		processToChange->priority = MAX_PRIORITY;
-	} else if (newPriority < MIN_PRIORITY - 1) {  //-1 because of IDLE process priority
+	} else if (newPriority < MIN_PRIORITY - 1) {  // -1 because of IDLE process priority
 		processToChange->priority = MIN_PRIORITY;
 	} else {
 		processToChange->priority = newPriority;

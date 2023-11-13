@@ -82,6 +82,8 @@ int64_t syscallHandler(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2,
 			return (int64_t) sys_sem_anon_open(arg0);
 		case 37:
 			return (int64_t) sys_free_processes_info(arg0);
+		case 38:
+			return (int64_t) sys_destroy_pipe(arg0);
 	}
 	return -1;
 }
@@ -288,5 +290,10 @@ static int64_t sys_sem_anon_open(uint64_t semId) {
 
 static int64_t sys_free_processes_info(uint64_t info) {
 	freeProcessesInfo((processInfo **) info);
+	return 0;
+}
+
+static int64_t sys_destroy_pipe(uint64_t id) {
+	destroyPipe((int) id);
 	return 0;
 }

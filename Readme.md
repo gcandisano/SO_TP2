@@ -29,6 +29,10 @@ From the x64BareBones project directory run:
 Another way is to compile using the docker.sh script. This will create a docker image with all the required dependencies and compile the kernel.
   
     user@linux:$ ./docker.sh
+
+  If you want to compile using the buddy memory manager, instead of the list memory manager, you can use the following command:
+  
+    user@linux:$ ./docker.sh buddy
   
   Then you can run the kernel using the run.sh script.
   

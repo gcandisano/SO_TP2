@@ -92,4 +92,6 @@ static int64_t sys_sem_anon_open(uint64_t semId);
 
 static int64_t sys_free_processes_info(uint64_t info);
 
+static int64_t sys_destroy_pipe(uint64_t id);
+
 #endif

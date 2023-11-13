@@ -176,6 +176,14 @@ void analyzePipedCommand(char * buffer, int count) {
 		sys_wait_pid(pid1);
 	if (pid2 > 0)
 		sys_wait_pid(pid2);
+
+	sys_destroy_pipe(pipeFd);
+}
+
+int wait(int pid, int piped, int background) {
+	if (!piped && !background)
+		sys_wait_pid(pid);
+	return pid;
 }
 
 int analizeBuffer(char * buffer, int count, short piped, int * fds) {
@@ -185,40 +193,36 @@ int analizeBuffer(char * buffer, int count, short piped, int * fds) {
 		analyzePipedCommand(buffer, count);
 		return 0;
 	}
-	int shouldWait = isBackground(buffer);
+	int background = isBackground(buffer);
 	if (commandMatch(buffer, "help", count) || commandMatch(buffer, "HELP", count)) {
 		char * args[2] = {"help", NULL};
-		int pid = sys_create_process("help", args, &printHelp, shouldWait, fds);
+		int pid = sys_create_process("help", args, &printHelp, !background, fds);
 		sys_wait_pid(pid);
 		return pid;
 	} else if (commandMatch(buffer, "time", count)) {
 		char * args[2] = {"time", NULL};
-		int pid = sys_create_process("time", args, &timePrint, shouldWait, fds);
+		int pid = sys_create_process("time", args, &timePrint, !background, fds);
 		sys_wait_pid(pid);
 		return pid;
 	} else if (commandMatch(buffer, "date", count)) {
 		char * args[2] = {"date", NULL};
-		int pid = sys_create_process("date", args, &datePrint, shouldWait, fds);
+		int pid = sys_create_process("date", args, &datePrint, !background, fds);
 		sys_wait_pid(pid);
 		return pid;
 	} else if (commandMatch(buffer, "registers", count)) {
 		char * args[2] = {"registers", NULL};
-		int pid = sys_create_process("registers", args, &printRegs, shouldWait, fds);
-		if (!piped && !shouldWait)
-			sys_wait_pid(pid);
-		return pid;
+		int pid = sys_create_process("registers", args, &printRegs, !background, fds);
+		return wait(pid, piped, background);
 	} else if (commandMatch(buffer, "fillregs", count)) {
 		char * args[2] = {"fillregs", NULL};
-		int pid = sys_create_process("fillregs", args, &fillRegisters, shouldWait, fds);
-		if (!piped && !shouldWait)
-			sys_wait_pid(pid);
-		return pid;
+		int pid = sys_create_process("fillregs", args, &fillRegisters, !background, fds);
+		return wait(pid, piped, background);
 	} else if (commandMatch(buffer, "clear", count)) {
 		sys_clear_screen();
 	} else if (commandMatch(buffer, "pong", count)) {
 		char * args[2] = {"pong", NULL};
-		int pid = sys_create_process("pong", args, &pong, shouldWait, fds);
-		// if (!piped && !shouldWait)
+		int pid = sys_create_process("pong", args, &pong, !background, fds);
+		// if (!piped && !background)
 		sys_wait_pid(pid);
 		return pid;
 	} else if (commandMatch(buffer, "div0", count)) {
@@ -227,79 +231,61 @@ int analizeBuffer(char * buffer, int count, short piped, int * fds) {
 		invalidOpcode();
 	} else if (commandMatch(buffer, "mem", count)) {
 		char * args[2] = {"mem", NULL};
-		int pid = sys_create_process("mem", args, &memInfo, shouldWait, fds);
-		if (!piped && !shouldWait)
-			sys_wait_pid(pid);
-		return pid;
+		int pid = sys_create_process("mem", args, &memInfo, !background, fds);
+		return wait(pid, piped, background);
 	} else if (commandMatch(buffer, "ps", count)) {
 		char * args[2] = {"ps", NULL};
-		int pid = sys_create_process("ps", args, &processesInfo, shouldWait, fds);
-		if (!piped && !shouldWait)
-			sys_wait_pid(pid);
-		return pid;
+		int pid = sys_create_process("ps", args, &processesInfo, !background, fds);
+		return wait(pid, piped, background);
 	} else if (commandMatch(buffer, "kill", count)) {
 		char * args[3];
 		parseCommand(args, buffer, 3);
-		int pid = sys_create_process("kill", args, &killProcess, shouldWait, fds);
-		if (!piped && !shouldWait)
-			sys_wait_pid(pid);
-		return pid;
+		int pid = sys_create_process("kill", args, &killProcess, !background, fds);
+		return wait(pid, piped, background);
 	} else if (commandMatch(buffer, "block", count)) {
 		char * args[3];
 		parseCommand(args, buffer, 3);
-		int pid = sys_create_process("block", args, &blockProcess, shouldWait, fds);
-		if (!piped && !shouldWait)
-			sys_wait_pid(pid);
-		return pid;
+		int pid = sys_create_process("block", args, &blockProcess, !background, fds);
+		return wait(pid, piped, background);
 	} else if (commandMatch(buffer, "unblock", count)) {
 		char * args[3];
 		parseCommand(args, buffer, 3);
-		int pid = sys_create_process("unblock", args, &unblockProcess, shouldWait, fds);
-		if (!piped && !shouldWait)
-			sys_wait_pid(pid);
-		return pid;
+		int pid = sys_create_process("unblock", args, &unblockProcess, !background, fds);
+		return wait(pid, piped, background);
 	} else if (commandMatch(buffer, "yield", count)) {
 		char * args[3] = {"yield", NULL};
-		int pid = sys_create_process("yield", args, &yield, shouldWait, fds);
-		if (!piped && !shouldWait)
-			sys_wait_pid(pid);
-		return pid;
+		int pid = sys_create_process("yield", args, &yield, !background, fds);
+		return wait(pid, piped, background);
 	} else if (commandMatch(buffer, "nice", count)) {
 		char * args[4];
 		parseCommand(args, buffer, 4);
-		int pid = sys_create_process("nice", args, &changePriority, shouldWait, fds);
-		if (!piped && !shouldWait)
-			sys_wait_pid(pid);
-		return pid;
+		int pid = sys_create_process("nice", args, &changePriority, !background, fds);
+		return wait(pid, piped, background);
 	} else if (commandMatch(buffer, "loop", count)) {
-		int pid = sys_create_process("loop", loopArgs, &infiniteLoop, shouldWait, fds);
-		if (!shouldWait)
+		int pid = sys_create_process("loop", loopArgs, &infiniteLoop, !background, fds);
+		if (!background)
 			sys_wait_pid(pid);
 		return pid;
 	} else if (commandMatch(buffer, "testmm", count)) {
 		parseCommand(testmmArgs, buffer, 3);
-		int pid = sys_create_process("testmm", testmmArgs, &test_mm, shouldWait, fds);
-		if (!shouldWait)
+		int pid = sys_create_process("testmm", testmmArgs, &test_mm, !background, fds);
+		if (!background)
 			sys_wait_pid(pid);
 		return pid;
 	} else if (commandMatch(buffer, "testpro", count)) {
 		parseCommand(testProArgs, buffer, 3);
-		int pid = sys_create_process("testpro", testProArgs, &test_processes, shouldWait, fds);
-		if (!shouldWait)
+		int pid = sys_create_process("testpro", testProArgs, &test_processes, !background, fds);
+		if (!background)
 			sys_wait_pid(pid);
 		return pid;
 	} else if (commandMatch(buffer, "testprio", count)) {
-		int pid = sys_create_process("testprio", NULL, &test_prio, shouldWait, fds);
-		if (!piped && !shouldWait)
-			sys_wait_pid(pid);
-		return pid;
+		int pid = sys_create_process("testprio", NULL, &test_prio, !background, fds);
+		return wait(pid, piped, background);
 	} else if (commandMatch(buffer, "testsync", count)) {
 		printChar('\n');
 		parseCommand(testSyncArgs, buffer, 3);
-		int pid = sys_create_process("testsync", testSyncArgs, &test_sync, shouldWait, fds);
-		if (!piped && !shouldWait)
-			sys_wait_pid(pid);
-		return pid;
+		int pid = sys_create_process("testsync", testSyncArgs, &test_sync, !background, fds);
+		return wait(pid, piped, background);
 	} else if (commandMatch(buffer, "boca", count)) {
 		sys_clear_screen();
 		sys_draw_image(diego, 100, 100);
@@ -307,28 +293,20 @@ int analizeBuffer(char * buffer, int count, short piped, int * fds) {
 		sys_clear_screen();
 	} else if (commandMatch(buffer, "cat", count)) {
 		char * args[2] = {"cat", NULL};
-		int pid = sys_create_process("cat", args, &cat, shouldWait, fds);
-		if (!piped && !shouldWait)
-			sys_wait_pid(pid);
-		return pid;
+		int pid = sys_create_process("cat", args, &cat, !background, fds);
+		return wait(pid, piped, background);
 	} else if (commandMatch(buffer, "wc", count)) {
 		char * args[2] = {"wc", NULL};
-		int pid = sys_create_process("wc", args, &wc, shouldWait, fds);
-		if (!piped && !shouldWait)
-			sys_wait_pid(pid);
-		return pid;
+		int pid = sys_create_process("wc", args, &wc, !background, fds);
+		return wait(pid, piped, background);
 	} else if (commandMatch(buffer, "filter", count)) {
 		char * args[2] = {"filter", NULL};
-		int pid = sys_create_process("filter", args, &filter, shouldWait, fds);
-		if (!piped && !shouldWait)
-			sys_wait_pid(pid);
-		return pid;
+		int pid = sys_create_process("filter", args, &filter, !background, fds);
+		return wait(pid, piped, background);
 	} else if (commandMatch(buffer, "phylos", count)) {
 		char * args[2] = {"phylos", NULL};
 		int pid = sys_create_process("phylos", args, &phylo, 1, fds);
-		if (!piped && !shouldWait)
-			sys_wait_pid(pid);
-		return pid;
+		return wait(pid, piped, background);
 	} else {
 		printColor("\nCommand not found. Type \"help\" for command list\n", RED);
 	}

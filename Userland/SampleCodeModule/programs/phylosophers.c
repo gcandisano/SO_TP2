@@ -124,9 +124,9 @@ void addPhylo() {
 
 int philo(char ** args) {
 	char * arg = args[1];
+	int i = atoi(arg);
 	sys_free(arg);
 	sys_free(args);
-	int i = atoi(arg);
 	while (!last) {
 		sys_sem_wait(alt[i]);
 		think();

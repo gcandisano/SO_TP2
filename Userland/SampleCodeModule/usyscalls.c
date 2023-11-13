@@ -168,3 +168,7 @@ int64_t sys_sem_anon_open(int semID) {
 int64_t sys_free_processes_info(ProcessInfoPtr * info) {
 	return sys_call((uint64_t) 37, (uint64_t) info, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
 }
+
+int64_t sys_destroy_pipe(int id) {
+	return sys_call((uint64_t) 38, (uint64_t) id, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
+}

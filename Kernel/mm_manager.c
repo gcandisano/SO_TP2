@@ -27,7 +27,7 @@ void * malloc(uint64_t size) {
 	if (size <= 0) {
 		return NULL;
 	}
-	if (list_address >= (void *) 0x600000 + (128 * 1024 * 1024)) {
+	if (list_address >= (void *) 0x600000 + LIST_SPACE) {
 		printString("No More memory\n");
 		return NULL;
 	}
@@ -37,7 +37,7 @@ void * malloc(uint64_t size) {
 	}
 
 	if (current == NULL) {
-		return NULL;  // There is no more empty space
+		return NULL;  // There is no more free memory
 	}
 
 	NodePtr new_node = (NodePtr) (list_address + sizeof(struct node));
