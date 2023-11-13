@@ -50,6 +50,7 @@ int processesInfo() {
 		printf("\t%s\n", processesInfo[i]->name);
 		i++;
 	}
+	sys_free_processes_info(processesInfo);
 	return 0;
 }
 

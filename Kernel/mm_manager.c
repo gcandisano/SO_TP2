@@ -1,6 +1,5 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-// #define BUDDY
 #ifndef BUDDY
 #include <mm_manager.h>
 
@@ -11,6 +10,7 @@ memoryData memory_data;
 void * list_address;
 
 void startMemoryManager(const void * start_address, uint64_t size) {
+	printString("Using List Memory Manager\n\n");
 	list_address = (void *) start_address;
 	memory_list.address = (void *) start_address + LIST_SPACE;
 	memory_list.size = size;

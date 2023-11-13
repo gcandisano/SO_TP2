@@ -1,8 +1,13 @@
 
 all:  bootloader kernel userland image installPreCommit
 
+buddy:  bootloader kernelBuddy userland image installPreCommit
+
 bootloader:
 	cd Bootloader; make all
+
+kernelBuddy:
+	cd Kernel; make MM_MANAGER=BUDDY all
 
 kernel:
 	cd Kernel; make all

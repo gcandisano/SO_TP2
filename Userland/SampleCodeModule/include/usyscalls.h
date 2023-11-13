@@ -80,4 +80,6 @@ int64_t sys_create_anon_sem(int initialValue);
 
 int64_t sys_sem_anon_open(int semID);
 
+int64_t sys_free_processes_info(ProcessInfoPtr * info);
+
 #endif

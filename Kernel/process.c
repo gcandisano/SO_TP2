@@ -172,6 +172,14 @@ processInfo ** getProcessesInfo() {
 	return info;
 }
 
+void freeProcessesInfo(processInfo ** info) {
+	for (int i = 0; info[i] != NULL; i++) {
+		free(info[i]->name);
+		free(info[i]);
+	}
+	free(info);
+}
+
 void freeProcess(PCB * pcb) {
 	free(pcb->stack->base);
 	free(pcb->stack);

@@ -68,6 +68,8 @@ void setFileDescriptor(int pid, int index, int value);
 
 processInfo ** getProcessesInfo();
 
+void freeProcessesInfo(processInfo ** info);
+
 void freeProcess(PCB * processPcb);
 
 int waitpid(int pid);

@@ -164,3 +164,7 @@ int64_t sys_create_anon_sem(int initialValue) {
 int64_t sys_sem_anon_open(int semID) {
 	return sys_call((uint64_t) 36, (uint64_t) semID, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
 }
+
+int64_t sys_free_processes_info(ProcessInfoPtr * info) {
+	return sys_call((uint64_t) 37, (uint64_t) info, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
+}
